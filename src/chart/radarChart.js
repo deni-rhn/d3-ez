@@ -42,8 +42,6 @@ export default function() {
   let startAngle = 0;
   let endAngle = 360;
 
-  let groupNames;
-
   /**
    * Initialise Data, Scales and Series
    */
@@ -57,11 +55,11 @@ export default function() {
     // Slice Data, calculate totals, max etc.
     let slicedData = dataParse(data);
     let categoryNames = slicedData.categoryNames;
-    groupNames = slicedData.groupNames;
+    let seriesNames = slicedData.seriesNames;
     let maxValue = slicedData.maxValue;
 
     // If the colorScale has not been passed then attempt to calculate.
-    colorScale = typeof colorScale === "undefined" ? d3.scaleOrdinal().domain(groupNames).range(colors) : colorScale;
+    colorScale = typeof colorScale === "undefined" ? d3.scaleOrdinal().domain(seriesNames).range(colors) : colorScale;
 
     // X & Y Scales
     xScale = d3.scaleBand()

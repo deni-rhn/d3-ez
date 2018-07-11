@@ -32,7 +32,7 @@ export default function() {
 	function init(data) {
 		let slicedData = dataParse(data);
 		let categoryNames = slicedData.categoryNames;
-		let groupNames = slicedData.groupNames;
+		let seriesNames = slicedData.seriesNames;
 
 		// If the radius has not been passed then calculate it from width/height.
 		radius = (typeof radius === "undefined") ?
@@ -56,7 +56,7 @@ export default function() {
 
 		// If the yScale has not been passed then attempt to calculate.
 		yScale = (typeof yScale === "undefined") ?
-			d3.scaleBand().domain(groupNames).rangeRound([radius, innerRadius]).padding(0.1) :
+			d3.scaleBand().domain(seriesNames).rangeRound([radius, innerRadius]).padding(0.1) :
 			yScale;
 	}
 

@@ -49,7 +49,7 @@ export default function() {
 
 		// Slice Data, calculate totals, max etc.
 		let slicedData = dataParse(data);
-		let groupNames = slicedData.groupNames;
+		let seriesNames = slicedData.seriesNames;
 		let maxValue = slicedData.maxValue;
 		let categoryNames = slicedData.categoryNames;
 
@@ -60,7 +60,7 @@ export default function() {
 
 		// X & Y Scales
 		xScale = d3.scaleBand()
-			.domain(groupNames)
+			.domain(seriesNames)
 			.rangeRound([0, chartW])
 			.padding(0.1);
 

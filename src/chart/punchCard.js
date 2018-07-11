@@ -55,7 +55,7 @@ export default function() {
 		let maxValue = slicedData.maxValue;
 		let minValue = slicedData.minValue;
 		let categoryNames = slicedData.categoryNames;
-		let groupNames = slicedData.groupNames;
+		let seriesNames = slicedData.seriesNames;
 
 		let valDomain = [minValue, maxValue];
 		let sizeDomain = useGlobalScale ? valDomain : [0, d3.max(data[1]["values"], function(d) {
@@ -74,7 +74,7 @@ export default function() {
 			.padding(0.05);
 
 		yScale = d3.scaleBand()
-			.domain(groupNames)
+			.domain(seriesNames)
 			.range([0, chartH])
 			.padding(0.05);
 

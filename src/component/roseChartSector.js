@@ -31,7 +31,7 @@ export default function() {
 	function init(data) {
 		let slicedData = dataParse(data);
 		let categoryNames = slicedData.categoryNames;
-		let maxValue = stacked ? slicedData.groupTotalsMax : slicedData.maxValue;
+		let maxValue = stacked ? slicedData.seriesTotalsMax : slicedData.maxValue;
 
 		// If the radius has not been passed then calculate it from width/height.
 		radius = (typeof radius === "undefined") ?

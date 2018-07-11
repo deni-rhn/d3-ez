@@ -61,7 +61,7 @@ var ganttChart = function() {
 		chartH = height - (margin.top + margin.bottom);
 
 		var slicedData = d3.ez.dataParse(data);
-		var groupNames = slicedData.groupNames;
+		var seriesNames = slicedData.seriesNames;
 		// var categoryNames = slicedData.categoryNames;
 		// FIXME! Auto calculate categoryNames fom data.
 		var categoryNames = {
@@ -82,7 +82,7 @@ var ganttChart = function() {
 			.clamp(true);
 
 		yScale = d3.scaleBand()
-			.domain(groupNames)
+			.domain(seriesNames)
 			.rangeRound([0, chartH])
 			.padding(0.1);
 	};

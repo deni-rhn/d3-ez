@@ -25,7 +25,7 @@ export default function() {
 	 */
 	function init(data) {
 		let slicedData = dataParse(data);
-		let groupTotalsMax = slicedData.groupTotalsMax;
+		let seriesTotalsMax = slicedData.seriesTotalsMax;
 		let categoryNames = slicedData.categoryNames;
 
 		// If the colorScale has not been passed then attempt to calculate.
@@ -35,7 +35,7 @@ export default function() {
 
 		// If the yScale has not been passed then attempt to calculate.
 		yScale = (typeof yScale === "undefined") ?
-			d3.scaleLinear().domain([0, groupTotalsMax]).range([0, height]).nice() :
+			d3.scaleLinear().domain([0, seriesTotalsMax]).range([0, height]).nice() :
 			yScale;
 	}
 

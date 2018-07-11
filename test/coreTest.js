@@ -29,10 +29,10 @@ tape("indexTest", function(t) {
 tape("dataParseTest", function(t) {
 	let expected = {
 		levels: 1,
-		groupName: "Fruit",
-		groupNames: undefined,
-		groupTotals: undefined,
-		groupTotalsMax: undefined,
+		seriesName: "Fruit",
+		seriesNames: undefined,
+		seriesTotals: undefined,
+		seriesTotalsMax: undefined,
 		categoryNames: ["Apples", "Oranges", "Grapes", "Bananas"],
 		categoryTotal: 24,
 		categoryTotals: undefined,

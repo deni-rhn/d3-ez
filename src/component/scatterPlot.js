@@ -26,13 +26,13 @@ export default function() {
 	 */
 	function init(data) {
 		let slicedData = dataParse(data);
-		let groupNames = slicedData.groupNames;
+		let seriesNames = slicedData.seriesNames;
 		let maxValue = slicedData.maxValue;
 		let dateDomain = d3.extent(data[0].values, function(d) { return d.key; });
 
 		// If the colorScale has not been passed then attempt to calculate.
 		colorScale = (typeof colorScale === "undefined") ?
-			d3.scaleOrdinal().domain(groupNames).range(colors) :
+			d3.scaleOrdinal().domain(seriesNames).range(colors) :
 			colorScale;
 
 		// If the xScale has not been passed then attempt to calculate.

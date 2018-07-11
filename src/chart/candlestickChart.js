@@ -84,7 +84,7 @@ export default function() {
 			.nice();
 
 		// if (!yAxisLabel) {
-		//   yAxisLabel = slicedData.groupName;
+		//   yAxisLabel = slicedData.seriesName;
 		// }
 	}
 

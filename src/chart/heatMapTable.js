@@ -50,7 +50,7 @@ export default function() {
 		// Slice Data, calculate totals, max etc.
 		let slicedData = dataParse(data);
 		let categoryNames = slicedData.categoryNames;
-		let groupNames = slicedData.groupNames;
+		let seriesNames = slicedData.seriesNames;
 
 		// If thresholds values are not set attempt to auto-calculate the thresholds.
 		if (!thresholds) {
@@ -69,7 +69,7 @@ export default function() {
 			.padding(0.1);
 
 		yScale = d3.scaleBand()
-			.domain(groupNames)
+			.domain(seriesNames)
 			.range([0, chartH])
 			.padding(0.1);
 	}

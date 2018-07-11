@@ -14,7 +14,7 @@ export default function(data) {
 		}
 	})();
 
-	let groupName = (function() {
+	let seriesName = (function() {
 		let ret;
 		if (1 === levels) {
 			ret = d3.values(data)[0];
@@ -23,7 +23,7 @@ export default function(data) {
 		return ret;
 	})();
 
-	let groupNames = (function() {
+	let seriesNames = (function() {
 		let ret;
 		if (levels > 1) {
 			ret = data.map(function(d) {
@@ -34,17 +34,17 @@ export default function(data) {
 		return ret;
 	})();
 
-	let groupTotals = (function() {
+	let seriesTotals = (function() {
 		let ret;
 		if (levels > 1) {
 			ret = {};
 			d3.map(data).values().forEach(function(d) {
-				let groupName = d.key;
+				let seriesName = d.key;
 				d.values.forEach(function(d) {
 					let categoryValue = +d.value;
 
-					ret[groupName] = (typeof(ret[groupName]) === "undefined" ? 0 : ret[groupName]);
-					ret[groupName] += categoryValue;
+					ret[seriesName] = (typeof(ret[seriesName]) === "undefined" ? 0 : ret[seriesName]);
+					ret[seriesName] += categoryValue;
 				});
 			});
 		}
@@ -52,10 +52,10 @@ export default function(data) {
 		return ret;
 	})();
 
-	let groupTotalsMax = (function() {
+	let seriesTotalsMax = (function() {
 		let ret;
 		if (levels > 1) {
-			ret = d3.max(d3.values(groupTotals));
+			ret = d3.max(d3.values(seriesTotals));
 		}
 
 		return ret;
@@ -217,10 +217,10 @@ export default function(data) {
 
 	let my = {
 		levels: levels,
-		groupName: groupName,
-		groupNames: groupNames,
-		groupTotals: groupTotals,
-		groupTotalsMax: groupTotalsMax,
+		seriesName: seriesName,
+		seriesNames: seriesNames,
+		seriesTotals: seriesTotals,
+		seriesTotalsMax: seriesTotalsMax,
 		categoryNames: categoryNames,
 		categoryTotal: categoryTotal,
 		categoryTotals: categoryTotals,

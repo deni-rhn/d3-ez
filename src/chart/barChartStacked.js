@@ -48,8 +48,8 @@ export default function() {
 		chartH = height - (margin.top + margin.bottom);
 
 		let slicedData = dataParse(data);
-		let groupNames = slicedData.groupNames;
-		let groupTotalsMax = slicedData.groupTotalsMax;
+		let seriesNames = slicedData.seriesNames;
+		let seriesTotalsMax = slicedData.seriesTotalsMax;
 		let categoryNames = slicedData.categoryNames;
 
 		// If the colorScale has not been passed then attempt to calculate.
@@ -59,12 +59,12 @@ export default function() {
 
 		// X & Y Scales
 		xScale = d3.scaleBand()
-			.domain(groupNames)
+			.domain(seriesNames)
 			.rangeRound([0, chartW])
 			.padding(0.15);
 
 		yScale = d3.scaleLinear()
-			.domain([0, groupTotalsMax])
+			.domain([0, seriesTotalsMax])
 			.range([chartH, 0])
 			.nice();
 	}

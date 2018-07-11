@@ -50,7 +50,7 @@ export default function() {
 		// Slice Data, calculate totals, max etc.
 		let slicedData = dataParse(data);
 		let maxValue = slicedData.maxValue;
-		let groupNames = slicedData.groupNames;
+		let seriesNames = slicedData.seriesNames;
 
 		// Convert dates
 		data.forEach(function(d, i) {
@@ -62,7 +62,7 @@ export default function() {
 
 		// If the colorScale has not been passed then attempt to calculate.
 		colorScale = (typeof colorScale === "undefined") ?
-			d3.scaleOrdinal().domain(groupNames).range(colors) :
+			d3.scaleOrdinal().domain(seriesNames).range(colors) :
 			colorScale;
 
 		// X & Y Scales

@@ -12,7 +12,7 @@
 	(global.d3 = global.d3 || {}, global.d3.ez = factory(global.d3));
 }(this, (function (d3) { 'use strict';
 
-var version = "3.3.12";
+var version = "3.3.13";
 var license = "GPL-2.0";
 
 /**
@@ -29,7 +29,7 @@ function dataParse (data) {
 		}
 	}();
 
-	var groupName = function () {
+	var seriesName = function () {
 		var ret = void 0;
 		if (1 === levels) {
 			ret = d3.values(data)[0];
@@ -38,7 +38,7 @@ function dataParse (data) {
 		return ret;
 	}();
 
-	var groupNames = function () {
+	var seriesNames = function () {
 		var ret = void 0;
 		if (levels > 1) {
 			ret = data.map(function (d) {
@@ -49,17 +49,17 @@ function dataParse (data) {
 		return ret;
 	}();
 
-	var groupTotals = function () {
+	var seriesTotals = function () {
 		var ret = void 0;
 		if (levels > 1) {
 			ret = {};
 			d3.map(data).values().forEach(function (d) {
-				var groupName = d.key;
+				var seriesName = d.key;
 				d.values.forEach(function (d) {
 					var categoryValue = +d.value;
 
-					ret[groupName] = typeof ret[groupName] === "undefined" ? 0 : ret[groupName];
-					ret[groupName] += categoryValue;
+					ret[seriesName] = typeof ret[seriesName] === "undefined" ? 0 : ret[seriesName];
+					ret[seriesName] += categoryValue;
 				});
 			});
 		}
@@ -67,10 +67,10 @@ function dataParse (data) {
 		return ret;
 	}();
 
-	var groupTotalsMax = function () {
+	var seriesTotalsMax = function () {
 		var ret = void 0;
 		if (levels > 1) {
-			ret = d3.max(d3.values(groupTotals));
+			ret = d3.max(d3.values(seriesTotals));
 		}
 
 		return ret;
@@ -225,10 +225,10 @@ function dataParse (data) {
 
 	var my = {
 		levels: levels,
-		groupName: groupName,
-		groupNames: groupNames,
-		groupTotals: groupTotals,
-		groupTotalsMax: groupTotalsMax,
+		seriesName: seriesName,
+		seriesNames: seriesNames,
+		seriesTotals: seriesTotals,
+		seriesTotalsMax: seriesTotalsMax,
 		categoryNames: categoryNames,
 		categoryTotal: categoryTotal,
 		categoryTotals: categoryTotals,
@@ -801,14 +801,14 @@ function componentBarsStacked () {
   */
 	function init(data) {
 		var slicedData = dataParse(data);
-		var groupTotalsMax = slicedData.groupTotalsMax;
+		var seriesTotalsMax = slicedData.seriesTotalsMax;
 		var categoryNames = slicedData.categoryNames;
 
 		// If the colorScale has not been passed then attempt to calculate.
 		colorScale = typeof colorScale === "undefined" ? d3.scaleOrdinal().domain(categoryNames).range(colors) : colorScale;
 
 		// If the yScale has not been passed then attempt to calculate.
-		yScale = typeof yScale === "undefined" ? d3.scaleLinear().domain([0, groupTotalsMax]).range([0, height]).nice() : yScale;
+		yScale = typeof yScale === "undefined" ? d3.scaleLinear().domain([0, seriesTotalsMax]).range([0, height]).nice() : yScale;
 	}
 
 	/**
@@ -2409,7 +2409,7 @@ function componentHeatMapRing () {
 	function init(data) {
 		var slicedData = dataParse(data);
 		var categoryNames = slicedData.categoryNames;
-		var groupNames = slicedData.groupNames;
+		var seriesNames = slicedData.seriesNames;
 
 		// If the radius has not been passed then calculate it from width/height.
 		radius = typeof radius === "undefined" ? Math.min(width, height) / 2 : radius;
@@ -2426,7 +2426,7 @@ function componentHeatMapRing () {
 		xScale = typeof xScale === "undefined" ? d3.scaleBand().domain(categoryNames).rangeRound([startAngle, endAngle]).padding(0.1) : xScale;
 
 		// If the yScale has not been passed then attempt to calculate.
-		yScale = typeof yScale === "undefined" ? d3.scaleBand().domain(groupNames).rangeRound([radius, innerRadius]).padding(0.1) : yScale;
+		yScale = typeof yScale === "undefined" ? d3.scaleBand().domain(seriesNames).rangeRound([radius, innerRadius]).padding(0.1) : yScale;
 	}
 
 	/**
@@ -2600,7 +2600,7 @@ function componentHeatMapRow () {
 	function init(data) {
 		var slicedData = dataParse(data);
 		var categoryNames = slicedData.categoryNames;
-		var groupNames = slicedData.groupNames;
+		var seriesNames = slicedData.seriesNames;
 
 		// If thresholds values are not set attempt to auto-calculate the thresholds.
 		if (!thresholds) {
@@ -2614,7 +2614,7 @@ function componentHeatMapRow () {
 		xScale = typeof xScale === "undefined" ? d3.scaleBand().domain(categoryNames).range([0, width]).padding(0.1) : xScale;
 
 		// If the yScale has not been passed then attempt to calculate.
-		yScale = typeof yScale === "undefined" ? d3.scaleBand().domain(groupNames).range([0, height]).padding(0.1) : yScale;
+		yScale = typeof yScale === "undefined" ? d3.scaleBand().domain(seriesNames).range([0, height]).padding(0.1) : yScale;
 	}
 
 	/**
@@ -2933,14 +2933,14 @@ function componentLineChart () {
   */
 	function init(data) {
 		var slicedData = dataParse(data);
-		var groupNames = slicedData.groupNames;
+		var seriesNames = slicedData.seriesNames;
 		var maxValue = slicedData.maxValue;
 		var dateDomain = d3.extent(data[0].values, function (d) {
 			return d.key;
 		});
 
 		// If the colorScale has not been passed then attempt to calculate.
-		colorScale = typeof colorScale === "undefined" ? d3.scaleOrdinal().domain(groupNames).range(colors) : colorScale;
+		colorScale = typeof colorScale === "undefined" ? d3.scaleOrdinal().domain(seriesNames).range(colors) : colorScale;
 
 		// If the xScale has not been passed then attempt to calculate.
 		xScale = typeof xScale === "undefined" ? d3.scaleTime().domain(dateDomain).range([0, width]) : xScale;
@@ -3073,7 +3073,7 @@ function componentNumberCard () {
 	function init(data) {
 		var slicedData = dataParse(data);
 		var categoryNames = slicedData.categoryNames;
-		var groupNames = slicedData.groupNames;
+		var seriesNames = slicedData.seriesNames;
 		var maxValue = slicedData.maxValue;
 		var minValue = slicedData.minValue;
 
@@ -3086,7 +3086,7 @@ function componentNumberCard () {
 		xScale = typeof xScale === "undefined" ? d3.scaleBand().domain(categoryNames).range([0, width]).padding(0.05) : xScale;
 
 		// If the yScale has not been passed then attempt to calculate.
-		yScale = typeof yScale === "undefined" ? d3.scaleBand().domain(groupNames).range([0, height]).padding(0.05) : yScale;
+		yScale = typeof yScale === "undefined" ? d3.scaleBand().domain(seriesNames).range([0, height]).padding(0.05) : yScale;
 	}
 
 	/**
@@ -3504,7 +3504,7 @@ function componentProportionalAreaCircles () {
 	function init(data) {
 		var slicedData = dataParse(data);
 		var categoryNames = slicedData.categoryNames;
-		var groupNames = slicedData.groupNames;
+		var seriesNames = slicedData.seriesNames;
 		var maxValue = slicedData.maxValue;
 		var minValue = slicedData.minValue;
 
@@ -3523,7 +3523,7 @@ function componentProportionalAreaCircles () {
 		xScale = typeof xScale === "undefined" ? d3.scaleBand().domain(categoryNames).range([0, width]).padding(0.05) : xScale;
 
 		// If the yScale has not been passed then attempt to calculate.
-		yScale = typeof yScale === "undefined" ? d3.scaleBand().domain(groupNames).range([0, height]).padding(0.05) : yScale;
+		yScale = typeof yScale === "undefined" ? d3.scaleBand().domain(seriesNames).range([0, height]).padding(0.05) : yScale;
 	}
 
 	/**
@@ -3674,14 +3674,14 @@ function componentScatterPlot () {
   */
 	function init(data) {
 		var slicedData = dataParse(data);
-		var groupNames = slicedData.groupNames;
+		var seriesNames = slicedData.seriesNames;
 		var maxValue = slicedData.maxValue;
 		var dateDomain = d3.extent(data[0].values, function (d) {
 			return d.key;
 		});
 
 		// If the colorScale has not been passed then attempt to calculate.
-		colorScale = typeof colorScale === "undefined" ? d3.scaleOrdinal().domain(groupNames).range(colors) : colorScale;
+		colorScale = typeof colorScale === "undefined" ? d3.scaleOrdinal().domain(seriesNames).range(colors) : colorScale;
 
 		// If the xScale has not been passed then attempt to calculate.
 		xScale = typeof xScale === "undefined" ? d3.scaleTime().domain(dateDomain).range([0, width]) : xScale;
@@ -3823,7 +3823,7 @@ function componentRoseChartSector () {
 	function init(data) {
 		var slicedData = dataParse(data);
 		var categoryNames = slicedData.categoryNames;
-		var maxValue = stacked ? slicedData.groupTotalsMax : slicedData.maxValue;
+		var maxValue = stacked ? slicedData.seriesTotalsMax : slicedData.maxValue;
 
 		// If the radius has not been passed then calculate it from width/height.
 		radius = typeof radius === "undefined" ? Math.min(width, height) / 2 : radius;
@@ -4640,7 +4640,7 @@ function chartBarChartClustered () {
 
 		// Slice Data, calculate totals, max etc.
 		var slicedData = dataParse(data);
-		var groupNames = slicedData.groupNames;
+		var seriesNames = slicedData.seriesNames;
 		var maxValue = slicedData.maxValue;
 		var categoryNames = slicedData.categoryNames;
 
@@ -4648,7 +4648,7 @@ function chartBarChartClustered () {
 		colorScale = typeof colorScale === "undefined" ? d3.scaleOrdinal().domain(categoryNames).range(colors) : colorScale;
 
 		// X & Y Scales
-		xScale = d3.scaleBand().domain(groupNames).rangeRound([0, chartW]).padding(0.1);
+		xScale = d3.scaleBand().domain(seriesNames).rangeRound([0, chartW]).padding(0.1);
 
 		yScale = d3.scaleLinear().domain([0, maxValue]).range([chartH, 0]).nice();
 	}
@@ -4816,17 +4816,17 @@ function chartBarChartStacked () {
 		chartH = height - (margin.top + margin.bottom);
 
 		var slicedData = dataParse(data);
-		var groupNames = slicedData.groupNames;
-		var groupTotalsMax = slicedData.groupTotalsMax;
+		var seriesNames = slicedData.seriesNames;
+		var seriesTotalsMax = slicedData.seriesTotalsMax;
 		var categoryNames = slicedData.categoryNames;
 
 		// If the colorScale has not been passed then attempt to calculate.
 		colorScale = typeof colorScale === "undefined" ? d3.scaleOrdinal().domain(categoryNames).range(colors) : colorScale;
 
 		// X & Y Scales
-		xScale = d3.scaleBand().domain(groupNames).rangeRound([0, chartW]).padding(0.15);
+		xScale = d3.scaleBand().domain(seriesNames).rangeRound([0, chartW]).padding(0.15);
 
-		yScale = d3.scaleLinear().domain([0, groupTotalsMax]).range([chartH, 0]).nice();
+		yScale = d3.scaleLinear().domain([0, seriesTotalsMax]).range([chartH, 0]).nice();
 	}
 
 	/**
@@ -5553,7 +5553,7 @@ function chartCandlestickChart () {
 		yScale = d3.scaleLinear().domain(yDomain).range([chartH, 0]).nice();
 
 		// if (!yAxisLabel) {
-		//   yAxisLabel = slicedData.groupName;
+		//   yAxisLabel = slicedData.seriesName;
 		// }
 	}
 
@@ -5896,7 +5896,7 @@ function chartHeatMapRadial () {
 		// Slice Data, calculate totals, max etc.
 		var slicedData = dataParse(data);
 		var categoryNames = slicedData.categoryNames;
-		var groupNames = slicedData.groupNames;
+		var seriesNames = slicedData.seriesNames;
 
 		// If thresholds values are not set attempt to auto-calculate the thresholds.
 		if (!thresholds) {
@@ -5909,7 +5909,7 @@ function chartHeatMapRadial () {
 		// X & Y Scales
 		xScale = d3.scaleBand().domain(categoryNames).rangeRound([startAngle, endAngle]).padding(0.1);
 
-		yScale = d3.scaleBand().domain(groupNames).rangeRound([radius, innerRadius]).padding(0.1);
+		yScale = d3.scaleBand().domain(seriesNames).rangeRound([radius, innerRadius]).padding(0.1);
 	}
 
 	/**
@@ -6087,7 +6087,7 @@ function chartHeatMapTable () {
 		// Slice Data, calculate totals, max etc.
 		var slicedData = dataParse(data);
 		var categoryNames = slicedData.categoryNames;
-		var groupNames = slicedData.groupNames;
+		var seriesNames = slicedData.seriesNames;
 
 		// If thresholds values are not set attempt to auto-calculate the thresholds.
 		if (!thresholds) {
@@ -6100,7 +6100,7 @@ function chartHeatMapTable () {
 		// X & Y Scales
 		xScale = d3.scaleBand().domain(categoryNames).range([0, chartW]).padding(0.1);
 
-		yScale = d3.scaleBand().domain(groupNames).range([0, chartH]).padding(0.1);
+		yScale = d3.scaleBand().domain(seriesNames).range([0, chartH]).padding(0.1);
 	}
 
 	/**
@@ -6259,7 +6259,7 @@ function chartLineChart () {
 		// Slice Data, calculate totals, max etc.
 		var slicedData = dataParse(data);
 		var maxValue = slicedData.maxValue;
-		var groupNames = slicedData.groupNames;
+		var seriesNames = slicedData.seriesNames;
 
 		// Convert dates
 		data.forEach(function (d, i) {
@@ -6272,7 +6272,7 @@ function chartLineChart () {
 		});
 
 		// If the colorScale has not been passed then attempt to calculate.
-		colorScale = typeof colorScale === "undefined" ? d3.scaleOrdinal().domain(groupNames).range(colors) : colorScale;
+		colorScale = typeof colorScale === "undefined" ? d3.scaleOrdinal().domain(seriesNames).range(colors) : colorScale;
 
 		// X & Y Scales
 		xScale = d3.scaleTime().domain(dateDomain).range([0, chartW]);
@@ -6665,7 +6665,7 @@ function chartPunchCard () {
 		var maxValue = slicedData.maxValue;
 		var minValue = slicedData.minValue;
 		var categoryNames = slicedData.categoryNames;
-		var groupNames = slicedData.groupNames;
+		var seriesNames = slicedData.seriesNames;
 
 		var valDomain = [minValue, maxValue];
 		var sizeDomain = useGlobalScale ? valDomain : [0, d3.max(data[1]["values"], function (d) {
@@ -6678,7 +6678,7 @@ function chartPunchCard () {
 		// X & Y Scales
 		xScale = d3.scaleBand().domain(categoryNames).range([0, chartW]).padding(0.05);
 
-		yScale = d3.scaleBand().domain(groupNames).range([0, chartH]).padding(0.05);
+		yScale = d3.scaleBand().domain(seriesNames).range([0, chartH]).padding(0.05);
 
 		// Size Scale
 		sizeScale = d3.scaleLinear().domain(sizeDomain).range([minRadius, maxRadius]);
@@ -6843,8 +6843,6 @@ function chartRadarChart () {
   var startAngle = 0;
   var endAngle = 360;
 
-  var groupNames = void 0;
-
   /**
    * Initialise Data, Scales and Series
    */
@@ -6858,11 +6856,11 @@ function chartRadarChart () {
     // Slice Data, calculate totals, max etc.
     var slicedData = dataParse(data);
     var categoryNames = slicedData.categoryNames;
-    groupNames = slicedData.groupNames;
+    var seriesNames = slicedData.seriesNames;
     var maxValue = slicedData.maxValue;
 
     // If the colorScale has not been passed then attempt to calculate.
-    colorScale = typeof colorScale === "undefined" ? d3.scaleOrdinal().domain(groupNames).range(colors) : colorScale;
+    colorScale = typeof colorScale === "undefined" ? d3.scaleOrdinal().domain(seriesNames).range(colors) : colorScale;
 
     // X & Y Scales
     xScale = d3.scaleBand().domain(categoryNames).range([startAngle, endAngle]);
@@ -7024,7 +7022,7 @@ function chartRoseChart () {
 
 		// Slice Data, calculate totals, max etc.
 		var slicedData = dataParse(data);
-		var groupNames = slicedData.groupNames;
+		var seriesNames = slicedData.seriesNames;
 		var maxValue = slicedData.maxValue;
 		var categoryNames = slicedData.categoryNames;
 
@@ -7032,7 +7030,7 @@ function chartRoseChart () {
 		colorScale = typeof colorScale === "undefined" ? d3.scaleOrdinal().domain(categoryNames).range(colors) : colorScale;
 
 		// X & Y Scales
-		xScale = d3.scaleBand().domain(groupNames).rangeRound([0, 360]);
+		xScale = d3.scaleBand().domain(seriesNames).rangeRound([0, 360]);
 
 		yScale = d3.scaleLinear().domain([0, maxValue]).range([0, radius]);
 	}

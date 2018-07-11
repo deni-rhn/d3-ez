@@ -33,7 +33,7 @@ export default function() {
 	function init(data) {
 		let slicedData = dataParse(data);
 		let categoryNames = slicedData.categoryNames;
-		let groupNames = slicedData.groupNames;
+		let seriesNames = slicedData.seriesNames;
 		let maxValue = slicedData.maxValue;
 		let minValue = slicedData.minValue;
 
@@ -59,7 +59,7 @@ export default function() {
 
 		// If the yScale has not been passed then attempt to calculate.
 		yScale = (typeof yScale === "undefined") ?
-			d3.scaleBand().domain(groupNames).range([0, height]).padding(0.05) :
+			d3.scaleBand().domain(seriesNames).range([0, height]).padding(0.05) :
 			yScale;
 	}
 

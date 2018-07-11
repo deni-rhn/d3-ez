@@ -53,7 +53,7 @@ export default function() {
 		let maxValue = slicedData.maxValue;
 
 		if (!yAxisLabel) {
-			yAxisLabel = slicedData.groupName;
+			yAxisLabel = slicedData.seriesName;
 		}
 
 		// If the colorScale has not been passed then attempt to calculate.
