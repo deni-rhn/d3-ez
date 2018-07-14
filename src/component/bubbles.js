@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import { default as palette } from "../palette";
-import { default as dataParse } from "../dataParse";
+import { default as dataAnalysis } from "../dataAnalysis";
 import { default as componentLabeledNode } from "./labeledNode";
 
 /**
@@ -31,7 +31,7 @@ export default function() {
 	 */
 	function init(data) {
 		// Calculate the extents for each series.
-		// TODO: use dataParse() ?
+		// TODO: use dataAnalysis() ?
 		function extents(key) {
 			let serExts = [];
 			d3.map(data).values().forEach(function(d) {

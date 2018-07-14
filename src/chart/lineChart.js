@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import { default as palette } from "../palette";
-import { default as dataParse } from "../dataParse";
+import { default as dataAnalysis } from "../dataAnalysis";
 import { default as component } from "../component";
 
 /**
@@ -48,9 +48,9 @@ export default function() {
 		chartH = height - margin.top - margin.bottom;
 
 		// Slice Data, calculate totals, max etc.
-		let slicedData = dataParse(data);
-		let maxValue = slicedData.maxValue;
-		let seriesNames = slicedData.seriesNames;
+		let dataDimensions = dataAnalysis(data);
+		let seriesNames = dataDimensions.rowKeys;
+		let maxValue = dataDimensions.maxValue;
 
 		// Convert dates
 		data.forEach(function(d, i) {

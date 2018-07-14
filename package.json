@@ -36,17 +36,17 @@
     "babel-core": "^6.26.0",
     "babel-plugin-external-helpers": "^6.22.0",
     "babel-plugin-transform-object-assign": "^6.22.0",
-    "babel-preset-env": "^1.6.1",
+    "babel-preset-env": "^1.7.0",
     "eslint": "^4.19.1",
-    "jsdom": "^11.0.0",
+    "jsdom": "^11.11.0",
     "rollup": "^0.56.2",
-    "rollup-plugin-babel": "^3.0.3",
-    "rollup-plugin-json": "^2.3.0",
-    "tape": "^4.9.0",
+    "rollup-plugin-babel": "^3.0.7",
+    "rollup-plugin-json": "^2.3.1",
+    "tape": "^4.9.1",
     "uglify-es": "^3.3.9",
     "vows": "^0.8.2"
   },
   "dependencies": {
-    "d3": "^5.0.0"
+    "d3": "^5.5.0"
   }
 }

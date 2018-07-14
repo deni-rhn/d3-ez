@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import { default as palette } from "../palette";
-import { default as dataParse } from "../dataParse";
+import { default as dataAnalysis } from "../dataAnalysis";
 
 /**
  * Reusable Scatter Plot Component
@@ -25,9 +25,9 @@ export default function() {
 	 * Initialise Data and Scales
 	 */
 	function init(data) {
-		let slicedData = dataParse(data);
-		let seriesNames = slicedData.seriesNames;
-		let maxValue = slicedData.maxValue;
+		let dataDimensions = dataAnalysis(data);
+		let seriesNames = dataDimensions.rowKeys;
+		let maxValue = dataDimensions.maxValue;
 		let dateDomain = d3.extent(data[0].values, function(d) { return d.key; });
 
 		// If the colorScale has not been passed then attempt to calculate.

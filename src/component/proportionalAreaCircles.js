@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import { default as palette } from "../palette";
-import { default as dataParse } from "../dataParse";
+import { default as dataAnalysis } from "../dataAnalysis";
 import { default as componentLabeledNode } from "./labeledNode";
 
 /**
@@ -31,11 +31,11 @@ export default function() {
 	 * Initialise Data and Scales
 	 */
 	function init(data) {
-		let slicedData = dataParse(data);
-		let categoryNames = slicedData.categoryNames;
-		let seriesNames = slicedData.seriesNames;
-		let maxValue = slicedData.maxValue;
-		let minValue = slicedData.minValue;
+		let dataDimensions = dataAnalysis(data);
+		let categoryNames = dataDimensions.rowKeys;
+		let seriesNames = dataDimensions.columnKeys;
+		let minValue = dataDimensions.minValue;
+		let maxValue = dataDimensions.maxValue;
 
 		let valDomain = [minValue, maxValue];
 		let sizeDomain = useGlobalScale ? valDomain : [0, d3.max(data[1]["values"], function(d) {
@@ -54,12 +54,12 @@ export default function() {
 
 		// If the xScale has not been passed then attempt to calculate.
 		xScale = (typeof xScale === "undefined") ?
-			d3.scaleBand().domain(categoryNames).range([0, width]).padding(0.05) :
+			d3.scaleBand().domain(seriesNames).range([0, width]).padding(0.05) :
 			xScale;
 
 		// If the yScale has not been passed then attempt to calculate.
 		yScale = (typeof yScale === "undefined") ?
-			d3.scaleBand().domain(seriesNames).range([0, height]).padding(0.05) :
+			d3.scaleBand().domain(categoryNames).range([0, height]).padding(0.05) :
 			yScale;
 	}
 

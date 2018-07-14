@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import { default as palette } from "../palette";
-import { default as dataParse } from "../dataParse";
+import { default as dataAnalysis } from "../dataAnalysis";
 import { default as component } from "../component";
 
 /**
@@ -48,19 +48,19 @@ export default function() {
 		chartH = height - (margin.top + margin.bottom);
 
 		// Slice Data, calculate totals, max etc.
-		let slicedData = dataParse(data);
-		let seriesNames = slicedData.seriesNames;
-		let maxValue = slicedData.maxValue;
-		let categoryNames = slicedData.categoryNames;
+		let dataDimensions = dataAnalysis(data);
+		let categoryNames = dataDimensions.rowKeys;
+		let maxValue = dataDimensions.maxValue;
+		let seriesNames = dataDimensions.columnKeys;
 
 		// If the colorScale has not been passed then attempt to calculate.
 		colorScale = (typeof colorScale === "undefined") ?
-			d3.scaleOrdinal().domain(categoryNames).range(colors) :
+			d3.scaleOrdinal().domain(seriesNames).range(colors) :
 			colorScale;
 
 		// X & Y Scales
 		xScale = d3.scaleBand()
-			.domain(seriesNames)
+			.domain(categoryNames)
 			.rangeRound([0, chartW])
 			.padding(0.1);
 

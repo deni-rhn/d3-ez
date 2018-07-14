@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import { default as palette } from "../palette";
-import { default as dataParse } from "../dataParse";
+import { default as dataAnalysis } from "../dataAnalysis";
 import { default as component } from "../component";
 
 /**
@@ -84,7 +84,7 @@ export default function() {
 			.nice();
 
 		// if (!yAxisLabel) {
-		//   yAxisLabel = slicedData.seriesName;
+		//   yAxisLabel = dataDimensions.seriesName;
 		// }
 	}
 

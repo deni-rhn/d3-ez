@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import { default as palette } from "../palette";
-import { default as dataParse } from "../dataParse";
+import { default as dataAnalysis } from "../dataAnalysis";
 import { default as component } from "../component";
 
 /**
@@ -51,7 +51,7 @@ export default function() {
 		chartH = height - (margin.top + margin.bottom);
 
 		// Calculate the extents for each series.
-		// TODO: Use dataParse() ?
+		// TODO: Use dataAnalysis() ?
 		function extents(key) {
 			let serExts = [];
 			d3.map(data).values().forEach(function(d) {

@@ -1,31 +1,34 @@
 import * as d3 from "d3";
 
 /**
- * Base Functions - Data Parse
+ * Data Analysis
  *
  */
 export default function(data) {
 
-	let levels = (function() {
+	const STRUCTURE_ROW = 1;
+	const STRUCTURE_ROWS = 2;
+
+	let dataStructure = (function() {
 		if (data["key"] !== undefined) {
-			return 1;
+			return STRUCTURE_ROW;
 		} else {
-			return 2;
+			return STRUCTURE_ROWS;
 		}
 	})();
 
-	let seriesName = (function() {
+	let rowKey = (function() {
 		let ret;
-		if (1 === levels) {
+		if (STRUCTURE_ROW === dataStructure) {
 			ret = d3.values(data)[0];
 		}
 
 		return ret;
 	})();
 
-	let seriesNames = (function() {
+	let rowKeys = (function() {
 		let ret;
-		if (levels > 1) {
+		if (STRUCTURE_ROWS === dataStructure) {
 			ret = data.map(function(d) {
 				return d.key;
 			});
@@ -34,17 +37,15 @@ export default function(data) {
 		return ret;
 	})();
 
-	let seriesTotals = (function() {
+	let rowTotals = (function() {
 		let ret;
-		if (levels > 1) {
+		if (STRUCTURE_ROWS === dataStructure) {
 			ret = {};
 			d3.map(data).values().forEach(function(d) {
-				let seriesName = d.key;
+				let rowKey = d.key;
 				d.values.forEach(function(d) {
-					let categoryValue = +d.value;
-
-					ret[seriesName] = (typeof(ret[seriesName]) === "undefined" ? 0 : ret[seriesName]);
-					ret[seriesName] += categoryValue;
+					ret[rowKey] = (typeof(ret[rowKey]) === "undefined" ? 0 : ret[rowKey]);
+					ret[rowKey] += d.value;
 				});
 			});
 		}
@@ -52,10 +53,10 @@ export default function(data) {
 		return ret;
 	})();
 
-	let seriesTotalsMax = (function() {
+	let rowTotalsMax = (function() {
 		let ret;
-		if (levels > 1) {
-			ret = d3.max(d3.values(seriesTotals));
+		if (STRUCTURE_ROWS === dataStructure) {
+			ret = d3.max(d3.values(rowTotals));
 		}
 
 		return ret;
@@ -79,10 +80,10 @@ export default function(data) {
 		return ret;
 	};
 
-	let categoryNames = (function() {
+	let columnKeys = (function() {
 
 		let ret = [];
-		if (1 === levels) {
+		if (STRUCTURE_ROW === dataStructure) {
 			ret = d3.values(data.values).map(function(d) {
 				return d.key;
 			});
@@ -91,8 +92,7 @@ export default function(data) {
 			d3.map(data).values().forEach(function(d) {
 				let tmp = [];
 				d.values.forEach(function(d, i) {
-					let categoryName = d.key;
-					tmp[i] = categoryName;
+					tmp[i] = d.key;
 				});
 
 				ret = union(tmp, ret);
@@ -102,9 +102,9 @@ export default function(data) {
 		return ret;
 	})();
 
-	let categoryTotal = (function() {
+	let rowTotal = (function() {
 		let ret;
-		if (1 === levels) {
+		if (STRUCTURE_ROW === dataStructure) {
 			ret = d3.sum(data.values, function(d) {
 				return d.value;
 			});
@@ -113,17 +113,15 @@ export default function(data) {
 		return ret;
 	})();
 
-	let categoryTotals = (function() {
+	let columnTotals = (function() {
 		let ret;
-		if (levels > 1) {
+		if (STRUCTURE_ROWS === dataStructure) {
 			ret = {};
 			d3.map(data).values().forEach(function(d) {
 				d.values.forEach(function(d) {
-					let categoryName = d.key;
-					let categoryValue = +d.value;
-
-					ret[categoryName] = (typeof(ret[categoryName]) === "undefined" ? 0 : ret[categoryName]);
-					ret[categoryName] += categoryValue;
+					let columnName = d.key;
+					ret[columnName] = (typeof(ret[columnName]) === "undefined" ? 0 : ret[columnName]);
+					ret[columnName] += d.value;
 				});
 			});
 		}
@@ -131,10 +129,10 @@ export default function(data) {
 		return ret;
 	})();
 
-	let categoryTotalsMax = (function() {
+	let columnTotalsMax = (function() {
 		let ret;
-		if (levels > 1) {
-			ret = d3.max(d3.values(categoryTotals));
+		if (STRUCTURE_ROWS === dataStructure) {
+			ret = d3.max(d3.values(columnTotals));
 		}
 
 		return ret;
@@ -142,7 +140,7 @@ export default function(data) {
 
 	let minValue = (function() {
 		let ret;
-		if (1 === levels) {
+		if (STRUCTURE_ROW === dataStructure) {
 			ret = d3.min(data.values, function(d) {
 				return +d.value;
 			});
@@ -159,7 +157,7 @@ export default function(data) {
 
 	let maxValue = (function() {
 		let ret;
-		if (1 === levels) {
+		if (STRUCTURE_ROW === dataStructure) {
 			ret = d3.max(data.values, function(d) {
 				return +d.value;
 			});
@@ -177,21 +175,22 @@ export default function(data) {
 
 	let decimalPlaces = function(num) {
 		let match = ("" + num).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
-		if (!match) { return 0; }
-		let ret = Math.max(
+		if (!match) {
+			return 0;
+		}
+
+		return Math.max(
 			0,
 			// Number of digits right of decimal point.
 			(match[1] ? match[1].length : 0)
 			// Adjust for scientific notation.
 			-
 			(match[2] ? +match[2] : 0));
-
-		return ret;
 	};
 
 	let maxDecimalPlace = (function() {
 		let ret = 0;
-		if (levels > 1) {
+		if (STRUCTURE_ROWS === dataStructure) {
 			d3.map(data).values().forEach(function(d) {
 				d.values.forEach(function(d) {
 					ret = d3.max([ret, decimalPlaces(d.value)])
@@ -205,31 +204,28 @@ export default function(data) {
 	// If thresholds values are not already set attempt to auto-calculate some thresholds
 	let thresholds = (function() {
 		let distance = maxValue - minValue;
-		let ret = [
-      +(minValue + (0.15 * distance)).toFixed(maxDecimalPlace),
-      +(minValue + (0.40 * distance)).toFixed(maxDecimalPlace),
-      +(minValue + (0.55 * distance)).toFixed(maxDecimalPlace),
-      +(minValue + (0.90 * distance)).toFixed(maxDecimalPlace)
-		];
 
-		return ret;
+		return [
+			+(minValue + (0.15 * distance)).toFixed(maxDecimalPlace),
+			+(minValue + (0.40 * distance)).toFixed(maxDecimalPlace),
+			+(minValue + (0.55 * distance)).toFixed(maxDecimalPlace),
+			+(minValue + (0.90 * distance)).toFixed(maxDecimalPlace)
+		];
 	})();
 
-	let my = {
-		levels: levels,
-		seriesName: seriesName,
-		seriesNames: seriesNames,
-		seriesTotals: seriesTotals,
-		seriesTotalsMax: seriesTotalsMax,
-		categoryNames: categoryNames,
-		categoryTotal: categoryTotal,
-		categoryTotals: categoryTotals,
-		categoryTotalsMax: categoryTotalsMax,
+	return {
+		levels: dataStructure,
+		rowKey: rowKey,
+		rowTotal: rowTotal,
+		rowKeys: rowKeys,
+		rowTotals: rowTotals,
+		rowTotalsMax: rowTotalsMax,
+		columnKeys: columnKeys,
+		columnTotals: columnTotals,
+		columnTotalsMax: columnTotalsMax,
 		minValue: minValue,
 		maxValue: maxValue,
 		maxDecimalPlace: maxDecimalPlace,
 		thresholds: thresholds
 	};
-
-	return my;
 }

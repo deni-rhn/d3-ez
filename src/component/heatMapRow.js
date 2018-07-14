@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import { default as palette } from "../palette";
-import { default as dataParse } from "../dataParse";
+import { default as dataAnalysis } from "../dataAnalysis";
 
 /**
  * Reusable Heat Map Table Row Component
@@ -26,13 +26,13 @@ export default function() {
 	 * Initialise Data and Scales
 	 */
 	function init(data) {
-		let slicedData = dataParse(data);
-		let categoryNames = slicedData.categoryNames;
-		let seriesNames = slicedData.seriesNames;
+		let dataDimensions = dataAnalysis(data);
+		let categoryNames = dataDimensions.rowKeys;
+		let seriesNames = dataDimensions.columnKeys;
 
 		// If thresholds values are not set attempt to auto-calculate the thresholds.
 		if (!thresholds) {
-			thresholds = slicedData.thresholds;
+			thresholds = dataDimensions.thresholds;
 		}
 
 		// If the colorScale has not been passed then attempt to calculate.
@@ -42,12 +42,12 @@ export default function() {
 
 		// If the xScale has not been passed then attempt to calculate.
 		xScale = (typeof xScale === "undefined") ?
-			d3.scaleBand().domain(categoryNames).range([0, width]).padding(0.1) :
+			d3.scaleBand().domain(seriesNames).range([0, width]).padding(0.1) :
 			xScale;
 
 		// If the yScale has not been passed then attempt to calculate.
 		yScale = (typeof yScale === "undefined") ?
-			d3.scaleBand().domain(seriesNames).range([0, height]).padding(0.1) :
+			d3.scaleBand().domain(categoryNames).range([0, height]).padding(0.1) :
 			yScale;
 	}
 

@@ -8,7 +8,7 @@
 
 import { version, license } from "./package.json";
 
-import { default as dataParse } from "./src/dataParse";
+import { default as dataAnalysis } from "./src/dataAnalysis";
 import { default as palette } from "./src/palette";
 import { default as base } from "./src/base";
 import { default as component } from "./src/component";
@@ -24,7 +24,7 @@ export default {
 	copyright: copyright,
 	license: license,
 	base: base,
-	dataParse: dataParse,
+	dataAnalysis: dataAnalysis,
 	palette: palette,
 	component: component,
 	chart: chart

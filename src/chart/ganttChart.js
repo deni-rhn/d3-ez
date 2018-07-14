@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import { default as palette } from "../palette";
-import { default as dataParse } from "../dataParse";
+import { default as dataAnalysis } from "../dataAnalysis";
 import { default as component } from "../component";
 
 /**
@@ -46,9 +46,9 @@ export default function() {
     chartW = width - (margin.left + margin.right);
     chartH = height - (margin.top + margin.bottom);
 
-    var slicedData = d3.ez.dataParse(data);
-    var seriesNames = slicedData.seriesNames;
-    var categoryNames = slicedData.categoryNames;
+    var dataDimensions = d3.ez.dataAnalysis(data);
+    var categoryNames = dataDimensions.rowKeys;
+    var seriesNames = dataDimensions.columnKeys;
 
     // Calculate Start and End Dates
     data.forEach(function(d) {
@@ -61,7 +61,7 @@ export default function() {
 
     // If the colorScale has not been passed then attempt to calculate.
     colorScale = (typeof colorScale === "undefined") ?
-      d3.scaleOrdinal().domain(categoryNames).range(colors) :
+      d3.scaleOrdinal().domain(seriesNames).range(colors) :
       colorScale;
 
     // X & Y Scales
@@ -71,7 +71,7 @@ export default function() {
       .clamp(true);
 
     yScale = d3.scaleBand()
-      .domain(seriesNames)
+      .domain(categoryNames)
       .rangeRound([0, chartH])
       .padding(0.1);
   };
