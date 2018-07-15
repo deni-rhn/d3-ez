@@ -17,6 +17,33 @@
     d3.json("data/uk_elections.json").then(function(data) {
       // UK Election Results Source: http://www.ukpolitical.info/2015.htm
 
+      function rotate(input) {
+        var columnKeys = input.map(function(x) {
+          return x.key
+        });
+
+        var rowKeys = input[0].values.map(function(x) {
+          return x.key
+        });
+
+        var output = rowKeys.map(function(x, i) {
+          var values = [];
+          for (var j = 0; j <= input.length - 1; j++) {
+            values[j] = {
+              key: columnKeys[j],
+              value: input[j].values[i].value
+            };
+          }
+
+          return {
+            key: x,
+            values: values
+          }
+        });
+        return output;
+      }
+      data = rotate(data);
+
       var colors = ["#c00", "#36c", "#f90", "#fc0"];
       var chart = d3.ez.chart.barChartClustered().colors(colors).yAxisLabel("Seats");
       var legend = d3.ez.component.legend().title("Party");

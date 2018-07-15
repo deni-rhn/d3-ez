@@ -98,7 +98,7 @@ export default function() {
 		}
 
 		// Update the chart dimensions and add layer groups
-		let layers = ["barsVertical", "xAxis axis", "yAxis axis"];
+		let layers = ["barChart", "xAxis axis", "yAxis axis"];
 		chart.classed(classed, true)
 			.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 			.attr("width", chartW)
@@ -121,7 +121,7 @@ export default function() {
 				.xScale(xScale)
 				.dispatch(dispatch);
 
-			chart.select(".barsVertical")
+			chart.select(".barChart")
 				.datum(data)
 				.call(barsVertical);
 

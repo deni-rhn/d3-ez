@@ -831,9 +831,9 @@ function componentBarsStacked () {
 				return series;
 			};
 
-			// Update series group
-			var seriesGroup = d3.select(this);
-			seriesGroup.classed(classed, true).attr("id", function (d) {
+			// Update bar group
+			var barGroup = d3.select(this);
+			barGroup.classed(classed, true).attr("id", function (d) {
 				return d.key;
 			}).on("mouseover", function (d) {
 				dispatch.call("customSeriesMouseOver", this, d);
@@ -841,8 +841,8 @@ function componentBarsStacked () {
 				dispatch.call("customSeriesClick", this, d);
 			});
 
-			// Add bars to series
-			var bars = seriesGroup.selectAll(".bar").data(function (d) {
+			// Add bars to group
+			var bars = barGroup.selectAll(".bar").data(function (d) {
 				return stacker(d.values);
 			});
 
@@ -1085,9 +1085,9 @@ function componentBarsVertical () {
 		init(selection.data());
 		selection.each(function () {
 
-			// Update series group
-			var seriesGroup = d3.select(this);
-			seriesGroup.classed(classed, true).attr("id", function (d) {
+			// Update bar group
+			var barGroup = d3.select(this);
+			barGroup.classed(classed, true).attr("id", function (d) {
 				return d.key;
 			}).on("mouseover", function (d) {
 				dispatch.call("customSeriesMouseOver", this, d);
@@ -1095,16 +1095,16 @@ function componentBarsVertical () {
 				dispatch.call("customSeriesClick", this, d);
 			});
 
-			// Add bars to series
-			var bars = seriesGroup.selectAll(".bar").data(function (d) {
+			// Add bars to group
+			var bars = barGroup.selectAll(".bar").data(function (d) {
 				return d.values;
 			});
 
-			bars.enter().append("rect").classed("bar", true).attr("fill", function (d) {
-				return colorScale(d.key);
-			}).attr("width", xScale.bandwidth()).attr("x", function (d) {
+			bars.enter().append("rect").classed("bar", true).attr("width", xScale.bandwidth()).attr("x", function (d) {
 				return xScale(d.key);
-			}).attr("y", height).attr("rx", 0).attr("ry", 0).attr("height", 0).on("mouseover", function (d) {
+			}).attr("y", height).attr("rx", 0).attr("ry", 0).attr("height", 0).attr("fill", function (d) {
+				return colorScale(d.key);
+			}).on("mouseover", function (d) {
 				dispatch.call("customValueMouseOver", this, d);
 			}).on("click", function (d) {
 				dispatch.call("customValueClick", this, d);
@@ -4670,7 +4670,7 @@ function chartBarChartClustered () {
 		}
 
 		// Update the chart dimensions and add layer groups
-		var layers = ["barChartGroup", "xAxis axis", "yAxis axis"];
+		var layers = ["barChart", "xAxis axis", "yAxis axis"];
 		chart.classed(classed, true).attr("transform", "translate(" + margin.left + "," + margin.top + ")").attr("width", chartW).attr("height", chartH).selectAll("g").data(layers).enter().append("g").attr("class", function (d) {
 			return d;
 		});
@@ -4679,17 +4679,17 @@ function chartBarChartClustered () {
 			// Initialise Data
 			init(data);
 
-			// Vertical Bars
+			// Vertical Bars Component
 			var barsVertical = component.barsVertical().width(xScale.bandwidth()).height(chartH).colorScale(colorScale).dispatch(dispatch);
 
 			// Create Bar Groups
-			var seriesGroup = chart.select(".barChartGroup").selectAll(".seriesGroup").data(data);
+			var categoryGroup = chart.select(".barChart").selectAll(".categoryGroup").data(data);
 
-			seriesGroup.enter().append("g").classed("seriesGroup", true).attr("transform", function (d) {
+			categoryGroup.enter().append("g").classed("categoryGroup", true).attr("transform", function (d) {
 				return "translate(" + xScale(d.key) + ", 0)";
-			}).merge(seriesGroup).call(barsVertical);
+			}).merge(categoryGroup).call(barsVertical);
 
-			seriesGroup.exit().remove();
+			categoryGroup.exit().remove();
 
 			// X Axis
 			var xAxis = d3.axisBottom(xScale);
@@ -4846,7 +4846,7 @@ function chartBarChartStacked () {
 		}
 
 		// Update the chart dimensions and add layer groups
-		var layers = ["barChartGroup", "xAxis axis", "yAxis axis"];
+		var layers = ["barChart", "xAxis axis", "yAxis axis"];
 		chart.classed(classed, true).attr("transform", "translate(" + margin.left + "," + margin.top + ")").attr("width", chartW).attr("height", chartH).selectAll("g").data(layers).enter().append("g").attr("class", function (d) {
 			return d;
 		});
@@ -4855,19 +4855,17 @@ function chartBarChartStacked () {
 			// Initialise Data
 			init(data);
 
-			// Stacked Bars
-			var barsStacked = component.barsStacked().width(xScale.bandwidth()).height(chartH).colorScale(colorScale)
-			//.yScale(yScale)
-			.dispatch(dispatch);
+			// Stacked Bars Component
+			var barsStacked = component.barsStacked().width(xScale.bandwidth()).height(chartH).colorScale(colorScale).dispatch(dispatch);
 
 			// Create Bar Groups
-			var seriesGroup = chart.select(".barChartGroup").selectAll(".seriesGroup").data(data);
+			var categoryGroup = chart.select(".barChart").selectAll(".categoryGroup").data(data);
 
-			seriesGroup.enter().append("g").classed("seriesGroup", true).attr("transform", function (d) {
+			categoryGroup.enter().append("g").classed("categoryGroup", true).attr("transform", function (d) {
 				return "translate(" + xScale(d.key) + ", 0)";
-			}).merge(seriesGroup).call(barsStacked);
+			}).merge(categoryGroup).call(barsStacked);
 
-			seriesGroup.exit().remove();
+			categoryGroup.exit().remove();
 
 			// X Axis
 			var xAxis = d3.axisBottom(xScale);
@@ -5019,7 +5017,7 @@ function chartBarChartHorizontal () {
 		}
 
 		// Update the chart dimensions and add layer groups
-		var layers = ["barsHorizontal", "xAxis axis", "yAxis axis"];
+		var layers = ["barChart", "xAxis axis", "yAxis axis"];
 		chart.classed(classed, true).attr("transform", "translate(" + margin.left + "," + margin.top + ")").attr("width", chartW).attr("height", chartH).selectAll("g").data(layers).enter().append("g").attr("class", function (d) {
 			return d;
 		});
@@ -5031,7 +5029,7 @@ function chartBarChartHorizontal () {
 			// Horizontal Bars
 			var barsHorizontal = component.barsHorizontal().width(chartW).height(chartH).colorScale(colorScale).xScale(xScale).yScale(yScale).dispatch(dispatch);
 
-			chart.select(".barsHorizontal").datum(data).call(barsHorizontal);
+			chart.select(".barChart").datum(data).call(barsHorizontal);
 
 			// X Axis
 			var xAxis = d3.axisBottom(xScale);
@@ -5175,7 +5173,7 @@ function chartBarChartVertical () {
 		}
 
 		// Update the chart dimensions and add layer groups
-		var layers = ["barsVertical", "xAxis axis", "yAxis axis"];
+		var layers = ["barChart", "xAxis axis", "yAxis axis"];
 		chart.classed(classed, true).attr("transform", "translate(" + margin.left + "," + margin.top + ")").attr("width", chartW).attr("height", chartH).selectAll("g").data(layers).enter().append("g").attr("class", function (d) {
 			return d;
 		});
@@ -5187,7 +5185,7 @@ function chartBarChartVertical () {
 			// Vertical Bars
 			var barsVertical = component.barsVertical().width(chartW).height(chartH).colorScale(colorScale).xScale(xScale).dispatch(dispatch);
 
-			chart.select(".barsVertical").datum(data).call(barsVertical);
+			chart.select(".barChart").datum(data).call(barsVertical);
 
 			// X Axis
 			var xAxis = d3.axisBottom(xScale);
@@ -5320,12 +5318,12 @@ function chartBubbleChart () {
 		var xDomain = extents("x");
 		var yDomain = extents("y");
 		var sizeDomain = extents("value");
-		var categoryNames = data.map(function (d) {
+		var seriesNames = data.map(function (d) {
 			return d.key;
 		});
 
 		// If the colorScale has not been passed then attempt to calculate.
-		colorScale = typeof colorScale === "undefined" ? d3.scaleOrdinal().domain(categoryNames).range(colors) : colorScale;
+		colorScale = typeof colorScale === "undefined" ? d3.scaleOrdinal().domain(seriesNames).range(colors) : colorScale;
 
 		// If the sizeScale has not been passed then attempt to calculate.
 		sizeScale = typeof sizeScale === "undefined" ? d3.scaleLinear().domain(sizeDomain).range([minRadius, maxRadius]) : sizeScale;
@@ -5545,10 +5543,6 @@ function chartCandlestickChart () {
 		xScale = d3.scaleTime().domain(xDomain).range([0, chartW]);
 
 		yScale = d3.scaleLinear().domain(yDomain).range([chartH, 0]).nice();
-
-		// if (!yAxisLabel) {
-		//   yAxisLabel = dataDimensions.seriesName;
-		// }
 	}
 
 	/**

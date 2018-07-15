@@ -94,7 +94,7 @@ export default function() {
 		}
 
 		// Update the chart dimensions and add layer groups
-		let layers = ["barChartGroup", "xAxis axis", "yAxis axis"];
+		let layers = ["barChart", "xAxis axis", "yAxis axis"];
 		chart.classed(classed, true)
 			.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 			.attr("width", chartW)
@@ -109,27 +109,26 @@ export default function() {
 			// Initialise Data
 			init(data);
 
-			// Stacked Bars
+			// Stacked Bars Component
 			let barsStacked = component.barsStacked()
 				.width(xScale.bandwidth())
 				.height(chartH)
 				.colorScale(colorScale)
-				//.yScale(yScale)
 				.dispatch(dispatch);
 
 			// Create Bar Groups
-			let seriesGroup = chart.select(".barChartGroup")
-				.selectAll(".seriesGroup")
+			let categoryGroup = chart.select(".barChart")
+				.selectAll(".categoryGroup")
 				.data(data);
 
-			seriesGroup.enter()
+			categoryGroup.enter()
 				.append("g")
-				.classed("seriesGroup", true)
+				.classed("categoryGroup", true)
 				.attr("transform", function(d) { return "translate(" + xScale(d.key) + ", 0)"; })
-				.merge(seriesGroup)
+				.merge(categoryGroup)
 				.call(barsStacked);
 
-			seriesGroup.exit()
+			categoryGroup.exit()
 				.remove();
 
 			// X Axis

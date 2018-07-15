@@ -68,13 +68,13 @@ export default function() {
 		let xDomain = extents("x");
 		let yDomain = extents("y");
 		let sizeDomain = extents("value");
-		let categoryNames = data.map(function(d) {
+		let seriesNames = data.map(function(d) {
 			return d.key;
 		});
 
 		// If the colorScale has not been passed then attempt to calculate.
 		colorScale = (typeof colorScale === "undefined") ?
-			d3.scaleOrdinal().domain(categoryNames).range(colors) :
+			d3.scaleOrdinal().domain(seriesNames).range(colors) :
 			colorScale;
 
 		// If the sizeScale has not been passed then attempt to calculate.

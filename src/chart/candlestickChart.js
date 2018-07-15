@@ -82,10 +82,6 @@ export default function() {
 			.domain(yDomain)
 			.range([chartH, 0])
 			.nice();
-
-		// if (!yAxisLabel) {
-		//   yAxisLabel = dataDimensions.seriesName;
-		// }
 	}
 
 	/**
