@@ -385,7 +385,6 @@ function dataSummarize (data) {
 	var STRUCTURE_ROWS = 2;
 
 	var dataStructure = function () {
-		console.log(data);
 		if (data["key"] !== undefined) {
 			return STRUCTURE_ROW;
 		} else {
