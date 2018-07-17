@@ -6,17 +6,17 @@
  * @license GPLv2
  */
 
-import { version, license } from "./package.json";
-
-import { default as dataAnalysis } from "./src/dataAnalysis";
-import { default as palette } from "./src/palette";
-import { default as base } from "./src/base";
-import { default as component } from "./src/component";
-import { default as chart } from "./src/chart";
-
 let author = "James Saunders";
 let date = new Date();
 let copyright = "Copyright (C) " + date.getFullYear() + " " + author;
+import { version, license } from "./package.json";
+
+import { default as base } from "./src/base";
+import { default as chart } from "./src/chart";
+import { default as component } from "./src/component";
+import { default as palette } from "./src/palette";
+import { default as dataSummarize } from "./src/dataSummarize";
+import { default as dataRotate } from "./src/dataRotate";
 
 export default {
 	version: version,
@@ -24,8 +24,9 @@ export default {
 	copyright: copyright,
 	license: license,
 	base: base,
-	component: component,
 	chart: chart,
+	component: component,
 	palette: palette,
-	dataAnalysis: dataAnalysis
+	dataSummarize: dataSummarize,
+	dataRotate: dataRotate
 };

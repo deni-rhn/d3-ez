@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import { default as palette } from "../palette";
-import { default as dataAnalysis } from "../dataAnalysis";
+import { default as dataSummarize } from "../dataSummarize";
 import { default as component } from "../component";
 
 /**
@@ -51,11 +51,11 @@ export default function() {
 		chartH = height - margin.top - margin.bottom;
 
 		// Slice Data, calculate totals, max etc.
-		let dataDimensions = dataAnalysis(data);
-		let categoryNames = dataDimensions.rowKeys;
-		let seriesNames = dataDimensions.columnKeys;
-		let maxValue = dataDimensions.maxValue;
-		let minValue = dataDimensions.minValue;
+		let dataSummary = dataSummarize(data);
+		let categoryNames = dataSummary.rowKeys;
+		let seriesNames = dataSummary.columnKeys;
+		let maxValue = dataSummary.maxValue;
+		let minValue = dataSummary.minValue;
 
 		let valDomain = [minValue, maxValue];
 		let sizeDomain = useGlobalScale ? valDomain : [0, d3.max(data[1]["values"], function(d) {

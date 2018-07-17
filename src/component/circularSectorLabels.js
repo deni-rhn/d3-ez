@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import { default as palette } from "../palette";
-import { default as dataAnalysis } from "../dataAnalysis";
+import { default as dataSummarize } from "../dataSummarize";
 
 /**
  * Reusable Circular Labels Component

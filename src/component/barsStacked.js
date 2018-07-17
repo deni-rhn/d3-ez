@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import { default as palette } from "../palette";
-import { default as dataAnalysis } from "../dataAnalysis";
+import { default as dataSummarize } from "../dataSummarize";
 
 /**
  * Reusable Stacked Bar Chart Component
@@ -24,9 +24,9 @@ export default function() {
 	 * Initialise Data and Scales
 	 */
 	function init(data) {
-		let dataDimensions = dataAnalysis(data);
-		let seriesNames = dataDimensions.columnKeys;
-		let seriesTotalsMax = dataDimensions.rowTotalsMax;
+		let dataSummary = dataSummarize(data);
+		let seriesNames = dataSummary.columnKeys;
+		let seriesTotalsMax = dataSummary.rowTotalsMax;
 
 		// If the colorScale has not been passed then attempt to calculate.
 		colorScale = (typeof colorScale === "undefined") ?

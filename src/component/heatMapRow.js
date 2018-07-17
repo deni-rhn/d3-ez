@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import { default as palette } from "../palette";
-import { default as dataAnalysis } from "../dataAnalysis";
+import { default as dataSummarize } from "../dataSummarize";
 
 /**
  * Reusable Heat Map Table Row Component
@@ -26,13 +26,13 @@ export default function() {
 	 * Initialise Data and Scales
 	 */
 	function init(data) {
-		let dataDimensions = dataAnalysis(data);
-		let categoryNames = dataDimensions.rowKeys;
-		let seriesNames = dataDimensions.columnKeys;
+		let dataSummary = dataSummarize(data);
+		let categoryNames = dataSummary.rowKeys;
+		let seriesNames = dataSummary.columnKeys;
 
 		// If thresholds values are not set attempt to auto-calculate the thresholds.
 		if (!thresholds) {
-			thresholds = dataDimensions.thresholds;
+			thresholds = dataSummary.thresholds;
 		}
 
 		// If the colorScale has not been passed then attempt to calculate.

@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import { default as palette } from "../palette";
-import { default as dataAnalysis } from "../dataAnalysis";
+import { default as dataSummarize } from "../dataSummarize";
 import { default as component } from "../component";
 
 /**
@@ -49,9 +49,9 @@ export default function() {
 		chartW = width - (margin.left + margin.right);
 		chartH = height - (margin.top + margin.bottom);
 
-		var dataDimensions = dataAnalysis(data);
-		var categoryNames = dataDimensions.rowKeys;
-		var seriesNames = dataDimensions.columnKeys;
+		var dataSummary = dataSummarize(data);
+		var categoryNames = dataSummary.rowKeys;
+		var seriesNames = dataSummary.columnKeys;
 
 		// Calculate Start and End Dates
 		data.forEach(function(d) {
@@ -107,7 +107,7 @@ export default function() {
 			// Initialise Data
 			init(data);
 
-			// Create Series Groups
+			// Create bar groups
 			var seriesGroup = chart.select(".ganttBarGroup")
 				.selectAll(".seriesGroup")
 				.data(data)

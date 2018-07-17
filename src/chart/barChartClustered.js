@@ -1,6 +1,7 @@
 import * as d3 from "d3";
 import { default as palette } from "../palette";
-import { default as dataAnalysis } from "../dataAnalysis";
+import { default as dataSummarize } from "../dataSummarize";
+import { default as dataRotate } from "../dataRotate";
 import { default as component } from "../component";
 
 /**
@@ -48,10 +49,10 @@ export default function() {
 		chartH = height - (margin.top + margin.bottom);
 
 		// Slice Data, calculate totals, max etc.
-		let dataDimensions = dataAnalysis(data);
-		let categoryNames = dataDimensions.rowKeys;
-		let maxValue = dataDimensions.maxValue;
-		let seriesNames = dataDimensions.columnKeys;
+		let dataSummary = dataSummarize(data);
+		let categoryNames = dataSummary.rowKeys;
+		let maxValue = dataSummary.maxValue;
+		let seriesNames = dataSummary.columnKeys;
 
 		// If the colorScale has not been passed then attempt to calculate.
 		colorScale = (typeof colorScale === "undefined") ?
@@ -108,6 +109,7 @@ export default function() {
 
 		selection.each(function(data) {
 			// Initialise Data
+			data = dataRotate(data);
 			init(data);
 
 			// Vertical Bars Component

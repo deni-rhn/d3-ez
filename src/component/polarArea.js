@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import { default as palette } from "../palette";
-import { default as dataAnalysis } from "../dataAnalysis";
+import { default as dataSummarize } from "../dataSummarize";
 
 /**
  * Reusable Polar Area Chart Component
@@ -28,9 +28,9 @@ export default function() {
 	 * Initialise Data and Scales
 	 */
 	function init(data) {
-		let dataDimensions = dataAnalysis(data);
-		let seriesNames = dataDimensions.columnKeys;
-		let maxValue = dataDimensions.maxValue;
+		let dataSummary = dataSummarize(data);
+		let seriesNames = dataSummary.columnKeys;
+		let maxValue = dataSummary.maxValue;
 
 		// If the radius has not been passed then calculate it from width/height.
 		radius = (typeof radius === "undefined") ?

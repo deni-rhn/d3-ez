@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import { default as palette } from "../palette";
-import { default as dataAnalysis } from "../dataAnalysis";
+import { default as dataSummarize } from "../dataSummarize";
 
 /**
  * Reusable Line Chart Component
@@ -32,9 +32,9 @@ export default function() {
       (Math.min(width, height) / 2) :
       radius;
 
-    let dataDimensions = dataAnalysis(data);
-    let seriesNames = dataDimensions.columnKeys;
-    let maxValue = dataDimensions.maxValue;
+    let dataSummary = dataSummarize(data);
+    let seriesNames = dataSummary.columnKeys;
+    let maxValue = dataSummary.maxValue;
 
     // Slice calculation on circle
     angleSlice = (Math.PI * 2 / seriesNames.length);

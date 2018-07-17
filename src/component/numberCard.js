@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import { default as palette } from "../palette";
-import { default as dataAnalysis } from "../dataAnalysis";
+import { default as dataSummarize } from "../dataSummarize";
 
 /**
  * Reusable Number Row Component
@@ -25,11 +25,11 @@ export default function() {
 	 * Initialise Data and Scales
 	 */
 	function init(data) {
-		let dataDimensions = dataAnalysis(data);
-		let categoryNames = dataDimensions.rowKeys;
-		let seriesNames = dataDimensions.columnKeys;
-		let minValue = dataDimensions.minValue;
-		let maxValue = dataDimensions.maxValue;
+		let dataSummary = dataSummarize(data);
+		let categoryNames = dataSummary.rowKeys;
+		let seriesNames = dataSummary.columnKeys;
+		let minValue = dataSummary.minValue;
+		let maxValue = dataSummary.maxValue;
 
 		let valDomain = [minValue, maxValue];
 

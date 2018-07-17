@@ -10,6 +10,7 @@ export default function(data) {
 	const STRUCTURE_ROWS = 2;
 
 	let dataStructure = (function() {
+		console.log(data);
 		if (data["key"] !== undefined) {
 			return STRUCTURE_ROW;
 		} else {

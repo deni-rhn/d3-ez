@@ -11,7 +11,7 @@ let dataset1 = {
 	]
 };
 
-tape("dataAnalysisTest1", function(t) {
+tape("dataSummarizeTest1", function(t) {
 	let expected = {
 		levels: 1,
 		rowKey: "Fruit",
@@ -27,7 +27,7 @@ tape("dataAnalysisTest1", function(t) {
 		maxDecimalPlace: 0,
 		thresholds: [4, 5, 6, 8]
 	};
-	let actual = d3Ez.dataAnalysis(dataset1);
+	let actual = d3Ez.dataSummarize(dataset1);
 	t.deepEqual(actual, expected);
 
 	t.end();
@@ -76,7 +76,7 @@ let dataset2 = [{
 	]
 }];
 
-tape("dataAnalysisTest2", function(t) {
+tape("dataSummarizeTest2", function(t) {
 	let expected = {
 		levels: 2,
 		rowKey: undefined,
@@ -92,7 +92,7 @@ tape("dataAnalysisTest2", function(t) {
 		maxDecimalPlace: 0,
 		thresholds: [3, 7, 10, 16]
 	};
-	let actual = d3Ez.dataAnalysis(dataset2);
+	let actual = d3Ez.dataSummarize(dataset2);
 	t.deepEqual(actual, expected);
 
 	t.end();

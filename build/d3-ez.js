@@ -16,326 +16,6 @@ var version = "3.3.13";
 var license = "GPL-2.0";
 
 /**
- * Data Analysis
- *
- */
-function dataAnalysis (data) {
-
-	var STRUCTURE_ROW = 1;
-	var STRUCTURE_ROWS = 2;
-
-	var dataStructure = function () {
-		if (data["key"] !== undefined) {
-			return STRUCTURE_ROW;
-		} else {
-			return STRUCTURE_ROWS;
-		}
-	}();
-
-	var rowKey = function () {
-		var ret = void 0;
-		if (STRUCTURE_ROW === dataStructure) {
-			ret = d3.values(data)[0];
-		}
-
-		return ret;
-	}();
-
-	var rowKeys = function () {
-		var ret = void 0;
-		if (STRUCTURE_ROWS === dataStructure) {
-			ret = data.map(function (d) {
-				return d.key;
-			});
-		}
-
-		return ret;
-	}();
-
-	var rowTotals = function () {
-		var ret = void 0;
-		if (STRUCTURE_ROWS === dataStructure) {
-			ret = {};
-			d3.map(data).values().forEach(function (d) {
-				var rowKey = d.key;
-				d.values.forEach(function (d) {
-					ret[rowKey] = typeof ret[rowKey] === "undefined" ? 0 : ret[rowKey];
-					ret[rowKey] += d.value;
-				});
-			});
-		}
-
-		return ret;
-	}();
-
-	var rowTotalsMax = function () {
-		var ret = void 0;
-		if (STRUCTURE_ROWS === dataStructure) {
-			ret = d3.max(d3.values(rowTotals));
-		}
-
-		return ret;
-	}();
-
-	var union = function union(array1, array2) {
-		var ret = [];
-		var arr = array1.concat(array2);
-		var len = arr.length;
-		var assoc = {};
-
-		while (len--) {
-			var item = arr[len];
-
-			if (!assoc[item]) {
-				ret.unshift(item);
-				assoc[item] = true;
-			}
-		}
-
-		return ret;
-	};
-
-	var columnKeys = function () {
-
-		var ret = [];
-		if (STRUCTURE_ROW === dataStructure) {
-			ret = d3.values(data.values).map(function (d) {
-				return d.key;
-			});
-		} else {
-			d3.map(data).values().forEach(function (d) {
-				var tmp = [];
-				d.values.forEach(function (d, i) {
-					tmp[i] = d.key;
-				});
-
-				ret = union(tmp, ret);
-			});
-		}
-
-		return ret;
-	}();
-
-	var rowTotal = function () {
-		var ret = void 0;
-		if (STRUCTURE_ROW === dataStructure) {
-			ret = d3.sum(data.values, function (d) {
-				return d.value;
-			});
-		}
-
-		return ret;
-	}();
-
-	var columnTotals = function () {
-		var ret = void 0;
-		if (STRUCTURE_ROWS === dataStructure) {
-			ret = {};
-			d3.map(data).values().forEach(function (d) {
-				d.values.forEach(function (d) {
-					var columnName = d.key;
-					ret[columnName] = typeof ret[columnName] === "undefined" ? 0 : ret[columnName];
-					ret[columnName] += d.value;
-				});
-			});
-		}
-
-		return ret;
-	}();
-
-	var columnTotalsMax = function () {
-		var ret = void 0;
-		if (STRUCTURE_ROWS === dataStructure) {
-			ret = d3.max(d3.values(columnTotals));
-		}
-
-		return ret;
-	}();
-
-	var minValue = function () {
-		var ret = void 0;
-		if (STRUCTURE_ROW === dataStructure) {
-			ret = d3.min(data.values, function (d) {
-				return +d.value;
-			});
-		} else {
-			d3.map(data).values().forEach(function (d) {
-				d.values.forEach(function (d) {
-					ret = typeof ret === "undefined" ? d.value : d3.min([ret, +d.value]);
-				});
-			});
-		}
-
-		return +ret;
-	}();
-
-	var maxValue = function () {
-		var ret = void 0;
-		if (STRUCTURE_ROW === dataStructure) {
-			ret = d3.max(data.values, function (d) {
-				return +d.value;
-			});
-		} else {
-			d3.map(data).values().forEach(function (d) {
-				d.values.forEach(function (d) {
-					ret = typeof ret === "undefined" ? d.value : d3.max([ret, +d.value]);
-				});
-			});
-		}
-
-		return +ret;
-	}();
-
-	var decimalPlaces = function decimalPlaces(num) {
-		var match = ("" + num).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
-		if (!match) {
-			return 0;
-		}
-
-		return Math.max(0,
-		// Number of digits right of decimal point.
-		(match[1] ? match[1].length : 0) - (
-		// Adjust for scientific notation.
-		match[2] ? +match[2] : 0));
-	};
-
-	var maxDecimalPlace = function () {
-		var ret = 0;
-		if (STRUCTURE_ROWS === dataStructure) {
-			d3.map(data).values().forEach(function (d) {
-				d.values.forEach(function (d) {
-					ret = d3.max([ret, decimalPlaces(d.value)]);
-				});
-			});
-		}
-
-		return ret;
-	}();
-
-	// If thresholds values are not already set attempt to auto-calculate some thresholds
-	var thresholds = function () {
-		var distance = maxValue - minValue;
-
-		return [+(minValue + 0.15 * distance).toFixed(maxDecimalPlace), +(minValue + 0.40 * distance).toFixed(maxDecimalPlace), +(minValue + 0.55 * distance).toFixed(maxDecimalPlace), +(minValue + 0.90 * distance).toFixed(maxDecimalPlace)];
-	}();
-
-	return {
-		levels: dataStructure,
-		rowKey: rowKey,
-		rowTotal: rowTotal,
-		rowKeys: rowKeys,
-		rowTotals: rowTotals,
-		rowTotalsMax: rowTotalsMax,
-		columnKeys: columnKeys,
-		columnTotals: columnTotals,
-		columnTotalsMax: columnTotalsMax,
-		minValue: minValue,
-		maxValue: maxValue,
-		maxDecimalPlace: maxDecimalPlace,
-		thresholds: thresholds
-	};
-}
-
-/**
- * Colour Palettes
- *
- * @example
- * d3.ez.palette.categorical(1);
- * d3.ez.palette.diverging(1);
- * d3.ez.palette.sequential("#ff0000", 9);
- * d3.ez.palette.lumShift(d3.ez.palette.categorical(1), 0.2);
- */
-var palette = {
-	categorical: function categorical(index) {
-		// Categorical colour palettes are the ones that are used to separate items into
-		// distinct groups or categories.
-		switch (index) {
-			case 1:
-				// Stephen Few - Show Me the Numbers Book
-				//      Blue       Orange     Green      Pink       L Brown    Purple     D.Yellow   Red        Black
-				return ["#5da5da", "#faa43a", "#60bd68", "#f17cb0", "#b2912f", "#b276b2", "#decf3f", "#f15854", "#4d4d4d"];
-			case 2:
-				// Color Brewer - http://colorbrewer2.com/
-				//      Red        L.Blue     Green      Purple     Orange     Yellow     Brown      Pink       Grey
-				return ["#fbb4ae", "#b3cde3", "#ccebc5", "#decbe4", "#fed9a6", "#ffffcc", "#e5d8bd", "#fddaec", "#f2f2f2"];
-			case 3:
-				// Google Design - http://www.google.com/design/spec/style/color.html
-				//      D. Blue    Orange     L.Green    Purple     Yellow     L.Blue     Red        D.Green    Brown
-				return ["#3f51b5", "#ff9800", "#8bc34a", "#9c27b0", "#ffeb3b", "#03a9f4", "#f44336", "#009688", "#795548"];
-		}
-	},
-
-	diverging: function diverging(index) {
-		// Diverging colour palettes are used for quantitative data. Usually two different hues
-		// that diverge from a light colour, for the critical midpoint, toward dark colours.
-		switch (index) {
-			case 1:
-				// Color Brewer - Colourblind Safe
-				return ["#8c510a", "#bf812d", "#dfc27d", "#f6e8c3", "#f5f5f5", "#c7eae5", "#80cdc1", "#35978f", "#01665e"];
-			case 2:
-				// Color Brewer - RAG
-				return ["#d73027", "#f46d43", "#fdae61", "#fee08b", "#ffffbf", "#d9ef8b", "#a6d96a", "#66bd63", "#1a9850"];
-			case 3:
-				// Chroma.js - http://gka.github.io/palettes/#colors=Blue,Ivory,Red|steps=9|bez=0|coL=0
-				return ["#0000ff", "#8052fe", "#b58bfb", "#ddc5f7", "#fffff0", "#ffcfb4", "#ff9e7a", "#ff6842", "#ff0000"];
-		}
-	},
-
-	sequential: function sequential(origHex, count) {
-		// Sequential colour palettes are primarily used to encode quantitative differences.
-		// Quantitative values are arranged sequentially, from low to high.
-		var lumStep = 0.1;
-		var lumMax = lumStep * count / 2;
-		var lumMin = 0 - lumMax;
-
-		var lumScale = d3.scaleLinear().domain([1, count]).range([lumMin, lumMax]);
-
-		var result = [];
-		for (var i = 1; i <= count; i++) {
-			var lum = lumScale(i);
-
-			// Validate and normalise Hex value.
-			origHex = String(origHex).replace(/[^0-9a-f]/gi, "");
-			if (origHex.length < 6) {
-				origHex = origHex[0] + origHex[0] + origHex[1] + origHex[1] + origHex[2] + origHex[2];
-			}
-
-			// Convert to decimal and change luminosity
-			var newHex = "#";
-			var c = void 0;
-			for (var j = 0; j < 3; j++) {
-				c = parseInt(origHex.substr(j * 2, 2), 16);
-				c = Math.round(Math.min(Math.max(0, c + c * lum), 255)).toString(16);
-				newHex += ("00" + c).substr(c.length);
-			}
-			result.push(newHex);
-		}
-		return result;
-	},
-
-	lumShift: function lumShift(colors, lum) {
-		var result = [];
-		colors.forEach(function addNumber(origHex, index) {
-			origHex = String(origHex).replace(/[^0-9a-f]/gi, "");
-			if (origHex.length < 6) {
-				origHex = origHex[0] + origHex[0] + origHex[1] + origHex[1] + origHex[2] + origHex[2];
-			}
-			lum = lum || 0;
-
-			// Convert to decimal and change luminosity
-			var newHex = "#";
-			for (var i = 0; i < 3; i++) {
-				var c = parseInt(origHex.substr(i * 2, 2), 16);
-				c = Math.round(Math.min(Math.max(0, c + c * lum), 255)).toString(16);
-				newHex += ("00" + c).substr(c.length);
-			}
-			result[index] = newHex;
-		});
-		return result;
-	}
-};
-
-/**
  * Reusable Credit Tag Component
  *
  */
@@ -597,6 +277,327 @@ function base () {
 }
 
 /**
+ * Colour Palettes
+ *
+ * @example
+ * d3.ez.palette.categorical(1);
+ * d3.ez.palette.diverging(1);
+ * d3.ez.palette.sequential("#ff0000", 9);
+ * d3.ez.palette.lumShift(d3.ez.palette.categorical(1), 0.2);
+ */
+var palette = {
+	categorical: function categorical(index) {
+		// Categorical colour palettes are the ones that are used to separate items into
+		// distinct groups or categories.
+		switch (index) {
+			case 1:
+				// Stephen Few - Show Me the Numbers Book
+				//      Blue       Orange     Green      Pink       L Brown    Purple     D.Yellow   Red        Black
+				return ["#5da5da", "#faa43a", "#60bd68", "#f17cb0", "#b2912f", "#b276b2", "#decf3f", "#f15854", "#4d4d4d"];
+			case 2:
+				// Color Brewer - http://colorbrewer2.com/
+				//      Red        L.Blue     Green      Purple     Orange     Yellow     Brown      Pink       Grey
+				return ["#fbb4ae", "#b3cde3", "#ccebc5", "#decbe4", "#fed9a6", "#ffffcc", "#e5d8bd", "#fddaec", "#f2f2f2"];
+			case 3:
+				// Google Design - http://www.google.com/design/spec/style/color.html
+				//      D. Blue    Orange     L.Green    Purple     Yellow     L.Blue     Red        D.Green    Brown
+				return ["#3f51b5", "#ff9800", "#8bc34a", "#9c27b0", "#ffeb3b", "#03a9f4", "#f44336", "#009688", "#795548"];
+		}
+	},
+
+	diverging: function diverging(index) {
+		// Diverging colour palettes are used for quantitative data. Usually two different hues
+		// that diverge from a light colour, for the critical midpoint, toward dark colours.
+		switch (index) {
+			case 1:
+				// Color Brewer - Colourblind Safe
+				return ["#8c510a", "#bf812d", "#dfc27d", "#f6e8c3", "#f5f5f5", "#c7eae5", "#80cdc1", "#35978f", "#01665e"];
+			case 2:
+				// Color Brewer - RAG
+				return ["#d73027", "#f46d43", "#fdae61", "#fee08b", "#ffffbf", "#d9ef8b", "#a6d96a", "#66bd63", "#1a9850"];
+			case 3:
+				// Chroma.js - http://gka.github.io/palettes/#colors=Blue,Ivory,Red|steps=9|bez=0|coL=0
+				return ["#0000ff", "#8052fe", "#b58bfb", "#ddc5f7", "#fffff0", "#ffcfb4", "#ff9e7a", "#ff6842", "#ff0000"];
+		}
+	},
+
+	sequential: function sequential(origHex, count) {
+		// Sequential colour palettes are primarily used to encode quantitative differences.
+		// Quantitative values are arranged sequentially, from low to high.
+		var lumStep = 0.1;
+		var lumMax = lumStep * count / 2;
+		var lumMin = 0 - lumMax;
+
+		var lumScale = d3.scaleLinear().domain([1, count]).range([lumMin, lumMax]);
+
+		var result = [];
+		for (var i = 1; i <= count; i++) {
+			var lum = lumScale(i);
+
+			// Validate and normalise Hex value.
+			origHex = String(origHex).replace(/[^0-9a-f]/gi, "");
+			if (origHex.length < 6) {
+				origHex = origHex[0] + origHex[0] + origHex[1] + origHex[1] + origHex[2] + origHex[2];
+			}
+
+			// Convert to decimal and change luminosity
+			var newHex = "#";
+			var c = void 0;
+			for (var j = 0; j < 3; j++) {
+				c = parseInt(origHex.substr(j * 2, 2), 16);
+				c = Math.round(Math.min(Math.max(0, c + c * lum), 255)).toString(16);
+				newHex += ("00" + c).substr(c.length);
+			}
+			result.push(newHex);
+		}
+		return result;
+	},
+
+	lumShift: function lumShift(colors, lum) {
+		var result = [];
+		colors.forEach(function addNumber(origHex, index) {
+			origHex = String(origHex).replace(/[^0-9a-f]/gi, "");
+			if (origHex.length < 6) {
+				origHex = origHex[0] + origHex[0] + origHex[1] + origHex[1] + origHex[2] + origHex[2];
+			}
+			lum = lum || 0;
+
+			// Convert to decimal and change luminosity
+			var newHex = "#";
+			for (var i = 0; i < 3; i++) {
+				var c = parseInt(origHex.substr(i * 2, 2), 16);
+				c = Math.round(Math.min(Math.max(0, c + c * lum), 255)).toString(16);
+				newHex += ("00" + c).substr(c.length);
+			}
+			result[index] = newHex;
+		});
+		return result;
+	}
+};
+
+/**
+ * Data Analysis
+ *
+ */
+function dataSummarize (data) {
+
+	var STRUCTURE_ROW = 1;
+	var STRUCTURE_ROWS = 2;
+
+	var dataStructure = function () {
+		console.log(data);
+		if (data["key"] !== undefined) {
+			return STRUCTURE_ROW;
+		} else {
+			return STRUCTURE_ROWS;
+		}
+	}();
+
+	var rowKey = function () {
+		var ret = void 0;
+		if (STRUCTURE_ROW === dataStructure) {
+			ret = d3.values(data)[0];
+		}
+
+		return ret;
+	}();
+
+	var rowKeys = function () {
+		var ret = void 0;
+		if (STRUCTURE_ROWS === dataStructure) {
+			ret = data.map(function (d) {
+				return d.key;
+			});
+		}
+
+		return ret;
+	}();
+
+	var rowTotals = function () {
+		var ret = void 0;
+		if (STRUCTURE_ROWS === dataStructure) {
+			ret = {};
+			d3.map(data).values().forEach(function (d) {
+				var rowKey = d.key;
+				d.values.forEach(function (d) {
+					ret[rowKey] = typeof ret[rowKey] === "undefined" ? 0 : ret[rowKey];
+					ret[rowKey] += d.value;
+				});
+			});
+		}
+
+		return ret;
+	}();
+
+	var rowTotalsMax = function () {
+		var ret = void 0;
+		if (STRUCTURE_ROWS === dataStructure) {
+			ret = d3.max(d3.values(rowTotals));
+		}
+
+		return ret;
+	}();
+
+	var union = function union(array1, array2) {
+		var ret = [];
+		var arr = array1.concat(array2);
+		var len = arr.length;
+		var assoc = {};
+
+		while (len--) {
+			var item = arr[len];
+
+			if (!assoc[item]) {
+				ret.unshift(item);
+				assoc[item] = true;
+			}
+		}
+
+		return ret;
+	};
+
+	var columnKeys = function () {
+
+		var ret = [];
+		if (STRUCTURE_ROW === dataStructure) {
+			ret = d3.values(data.values).map(function (d) {
+				return d.key;
+			});
+		} else {
+			d3.map(data).values().forEach(function (d) {
+				var tmp = [];
+				d.values.forEach(function (d, i) {
+					tmp[i] = d.key;
+				});
+
+				ret = union(tmp, ret);
+			});
+		}
+
+		return ret;
+	}();
+
+	var rowTotal = function () {
+		var ret = void 0;
+		if (STRUCTURE_ROW === dataStructure) {
+			ret = d3.sum(data.values, function (d) {
+				return d.value;
+			});
+		}
+
+		return ret;
+	}();
+
+	var columnTotals = function () {
+		var ret = void 0;
+		if (STRUCTURE_ROWS === dataStructure) {
+			ret = {};
+			d3.map(data).values().forEach(function (d) {
+				d.values.forEach(function (d) {
+					var columnName = d.key;
+					ret[columnName] = typeof ret[columnName] === "undefined" ? 0 : ret[columnName];
+					ret[columnName] += d.value;
+				});
+			});
+		}
+
+		return ret;
+	}();
+
+	var columnTotalsMax = function () {
+		var ret = void 0;
+		if (STRUCTURE_ROWS === dataStructure) {
+			ret = d3.max(d3.values(columnTotals));
+		}
+
+		return ret;
+	}();
+
+	var minValue = function () {
+		var ret = void 0;
+		if (STRUCTURE_ROW === dataStructure) {
+			ret = d3.min(data.values, function (d) {
+				return +d.value;
+			});
+		} else {
+			d3.map(data).values().forEach(function (d) {
+				d.values.forEach(function (d) {
+					ret = typeof ret === "undefined" ? d.value : d3.min([ret, +d.value]);
+				});
+			});
+		}
+
+		return +ret;
+	}();
+
+	var maxValue = function () {
+		var ret = void 0;
+		if (STRUCTURE_ROW === dataStructure) {
+			ret = d3.max(data.values, function (d) {
+				return +d.value;
+			});
+		} else {
+			d3.map(data).values().forEach(function (d) {
+				d.values.forEach(function (d) {
+					ret = typeof ret === "undefined" ? d.value : d3.max([ret, +d.value]);
+				});
+			});
+		}
+
+		return +ret;
+	}();
+
+	var decimalPlaces = function decimalPlaces(num) {
+		var match = ("" + num).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
+		if (!match) {
+			return 0;
+		}
+
+		return Math.max(0,
+		// Number of digits right of decimal point.
+		(match[1] ? match[1].length : 0) - (
+		// Adjust for scientific notation.
+		match[2] ? +match[2] : 0));
+	};
+
+	var maxDecimalPlace = function () {
+		var ret = 0;
+		if (STRUCTURE_ROWS === dataStructure) {
+			d3.map(data).values().forEach(function (d) {
+				d.values.forEach(function (d) {
+					ret = d3.max([ret, decimalPlaces(d.value)]);
+				});
+			});
+		}
+
+		return ret;
+	}();
+
+	// If thresholds values are not already set attempt to auto-calculate some thresholds
+	var thresholds = function () {
+		var distance = maxValue - minValue;
+
+		return [+(minValue + 0.15 * distance).toFixed(maxDecimalPlace), +(minValue + 0.40 * distance).toFixed(maxDecimalPlace), +(minValue + 0.55 * distance).toFixed(maxDecimalPlace), +(minValue + 0.90 * distance).toFixed(maxDecimalPlace)];
+	}();
+
+	return {
+		levels: dataStructure,
+		rowKey: rowKey,
+		rowTotal: rowTotal,
+		rowKeys: rowKeys,
+		rowTotals: rowTotals,
+		rowTotalsMax: rowTotalsMax,
+		columnKeys: columnKeys,
+		columnTotals: columnTotals,
+		columnTotalsMax: columnTotalsMax,
+		minValue: minValue,
+		maxValue: maxValue,
+		maxDecimalPlace: maxDecimalPlace,
+		thresholds: thresholds
+	};
+}
+
+/**
  * Reusable Circular Bar Chart Component
  *
  */
@@ -629,9 +630,9 @@ function componentBarsCircular () {
 
 		innerRadius = typeof innerRadius === "undefined" ? radius / 4 : innerRadius;
 
-		var dataDimensions = dataAnalysis(data);
-		var seriesNames = dataDimensions.columnKeys;
-		var maxValue = dataDimensions.maxValue;
+		var dataSummary = dataSummarize(data);
+		var seriesNames = dataSummary.columnKeys;
+		var maxValue = dataSummary.maxValue;
 
 		// If the colorScale has not been passed then attempt to calculate.
 		colorScale = typeof colorScale === "undefined" ? d3.scaleOrdinal().domain(seriesNames).range(colors) : colorScale;
@@ -794,9 +795,9 @@ function componentBarsStacked () {
   * Initialise Data and Scales
   */
 	function init(data) {
-		var dataDimensions = dataAnalysis(data);
-		var seriesNames = dataDimensions.columnKeys;
-		var seriesTotalsMax = dataDimensions.rowTotalsMax;
+		var dataSummary = dataSummarize(data);
+		var seriesNames = dataSummary.columnKeys;
+		var seriesTotalsMax = dataSummary.rowTotalsMax;
 
 		// If the colorScale has not been passed then attempt to calculate.
 		colorScale = typeof colorScale === "undefined" ? d3.scaleOrdinal().domain(seriesNames).range(colors) : colorScale;
@@ -932,9 +933,9 @@ function componentBarsHorizontal () {
   * Initialise Data and Scales
   */
 	function init(data) {
-		var dataDimensions = dataAnalysis(data);
-		var seriesNames = dataDimensions.columnKeys;
-		var maxValue = dataDimensions.maxValue;
+		var dataSummary = dataSummarize(data);
+		var seriesNames = dataSummary.columnKeys;
+		var maxValue = dataSummary.maxValue;
 
 		// If the colorScale has not been passed then attempt to calculate.
 		colorScale = typeof colorScale === "undefined" ? d3.scaleOrdinal().domain(seriesNames).range(colors) : colorScale;
@@ -1064,9 +1065,9 @@ function componentBarsVertical () {
   * Initialise Data and Scales
   */
 	function init(data) {
-		var dataDimensions = dataAnalysis(data);
-		var seriesNames = dataDimensions.columnKeys;
-		var maxValue = dataDimensions.maxValue;
+		var dataSummary = dataSummarize(data);
+		var seriesNames = dataSummary.columnKeys;
+		var maxValue = dataSummary.maxValue;
 
 		// If the colorScale has not been passed then attempt to calculate.
 		colorScale = typeof colorScale === "undefined" ? d3.scaleOrdinal().domain(seriesNames).range(colors) : colorScale;
@@ -1308,7 +1309,7 @@ function componentBubbles () {
   */
 	function init(data) {
 		// Calculate the extents for each series.
-		// TODO: use dataAnalysis() ?
+		// TODO: use dataSummarize() ?
 		function extents(key) {
 			var serExts = [];
 			d3.map(data).values().forEach(function (d) {
@@ -1325,12 +1326,12 @@ function componentBubbles () {
 		var xDomain = extents("x");
 		var yDomain = extents("y");
 		var sizeDomain = extents("value");
-		var categoryNames = data.map(function (d) {
+		var seriesNames = data.map(function (d) {
 			return d.key;
 		});
 
 		// If the colorScale has not been passed then attempt to calculate.
-		colorScale = typeof colorScale === "undefined" ? d3.scaleOrdinal().domain(categoryNames).range(colors) : colorScale;
+		colorScale = typeof colorScale === "undefined" ? d3.scaleOrdinal().domain(seriesNames).range(colors) : colorScale;
 
 		// If the sizeScale has not been passed then attempt to calculate.
 		sizeScale = typeof sizeScale === "undefined" ? d3.scaleLinear().domain(sizeDomain).range([minRadius, maxRadius]) : sizeScale;
@@ -2112,8 +2113,8 @@ function componentDonut () {
   * Initialise Data and Scales
   */
 	function init(data) {
-		var dataDimensions = dataAnalysis(data);
-		var seriesNames = dataDimensions.columnKeys;
+		var dataSummary = dataSummarize(data);
+		var seriesNames = dataSummary.columnKeys;
 
 		// If the radius has not been passed then calculate it from width/height.
 		radius = typeof radius === "undefined" ? Math.min(width, height) / 2 : radius;
@@ -2401,16 +2402,16 @@ function componentHeatMapRing () {
   * Initialise Data and Scales
   */
 	function init(data) {
-		var dataDimensions = dataAnalysis(data);
-		var categoryNames = dataDimensions.rowKeys;
-		var seriesNames = dataDimensions.columnKeys;
+		var dataSummary = dataSummarize(data);
+		var categoryNames = dataSummary.rowKeys;
+		var seriesNames = dataSummary.columnKeys;
 
 		// If the radius has not been passed then calculate it from width/height.
 		radius = typeof radius === "undefined" ? Math.min(width, height) / 2 : radius;
 
 		// If thresholds values are not set attempt to auto-calculate the thresholds.
 		if (!thresholds) {
-			thresholds = dataDimensions.thresholds;
+			thresholds = dataSummary.thresholds;
 		}
 
 		// If the colorScale has not been passed then attempt to calculate.
@@ -2592,13 +2593,13 @@ function componentHeatMapRow () {
   * Initialise Data and Scales
   */
 	function init(data) {
-		var dataDimensions = dataAnalysis(data);
-		var categoryNames = dataDimensions.rowKeys;
-		var seriesNames = dataDimensions.columnKeys;
+		var dataSummary = dataSummarize(data);
+		var categoryNames = dataSummary.rowKeys;
+		var seriesNames = dataSummary.columnKeys;
 
 		// If thresholds values are not set attempt to auto-calculate the thresholds.
 		if (!thresholds) {
-			thresholds = dataDimensions.thresholds;
+			thresholds = dataSummary.thresholds;
 		}
 
 		// If the colorScale has not been passed then attempt to calculate.
@@ -2926,9 +2927,9 @@ function componentLineChart () {
   * Initialise Data and Scales
   */
 	function init(data) {
-		var dataDimensions = dataAnalysis(data);
-		var seriesNames = dataDimensions.rowKeys;
-		var maxValue = dataDimensions.maxValue;
+		var dataSummary = dataSummarize(data);
+		var seriesNames = dataSummary.rowKeys;
+		var maxValue = dataSummary.maxValue;
 		var dateDomain = d3.extent(data[0].values, function (d) {
 			return d.key;
 		});
@@ -3065,11 +3066,11 @@ function componentNumberCard () {
   * Initialise Data and Scales
   */
 	function init(data) {
-		var dataDimensions = dataAnalysis(data);
-		var categoryNames = dataDimensions.rowKeys;
-		var seriesNames = dataDimensions.columnKeys;
-		var minValue = dataDimensions.minValue;
-		var maxValue = dataDimensions.maxValue;
+		var dataSummary = dataSummarize(data);
+		var categoryNames = dataSummary.rowKeys;
+		var seriesNames = dataSummary.columnKeys;
+		var minValue = dataSummary.minValue;
+		var maxValue = dataSummary.maxValue;
 
 		var valDomain = [minValue, maxValue];
 
@@ -3206,9 +3207,9 @@ function componentPolarArea () {
   * Initialise Data and Scales
   */
 	function init(data) {
-		var dataDimensions = dataAnalysis(data);
-		var seriesNames = dataDimensions.columnKeys;
-		var maxValue = dataDimensions.maxValue;
+		var dataSummary = dataSummarize(data);
+		var seriesNames = dataSummary.columnKeys;
+		var maxValue = dataSummary.maxValue;
 
 		// If the radius has not been passed then calculate it from width/height.
 		radius = typeof radius === "undefined" ? Math.min(width, height) / 2 : radius;
@@ -3353,9 +3354,9 @@ function componentRadarArea () {
     // If the radius has not been passed then calculate it from width/height.
     radius = typeof radius === "undefined" ? Math.min(width, height) / 2 : radius;
 
-    var dataDimensions = dataAnalysis(data);
-    var seriesNames = dataDimensions.columnKeys;
-    var maxValue = dataDimensions.maxValue;
+    var dataSummary = dataSummarize(data);
+    var seriesNames = dataSummary.columnKeys;
+    var maxValue = dataSummary.maxValue;
 
     // Slice calculation on circle
     angleSlice = Math.PI * 2 / seriesNames.length;
@@ -3496,11 +3497,11 @@ function componentProportionalAreaCircles () {
   * Initialise Data and Scales
   */
 	function init(data) {
-		var dataDimensions = dataAnalysis(data);
-		var categoryNames = dataDimensions.rowKeys;
-		var seriesNames = dataDimensions.columnKeys;
-		var minValue = dataDimensions.minValue;
-		var maxValue = dataDimensions.maxValue;
+		var dataSummary = dataSummarize(data);
+		var categoryNames = dataSummary.rowKeys;
+		var seriesNames = dataSummary.columnKeys;
+		var minValue = dataSummary.minValue;
+		var maxValue = dataSummary.maxValue;
 
 		var valDomain = [minValue, maxValue];
 		var sizeDomain = useGlobalScale ? valDomain : [0, d3.max(data[1]["values"], function (d) {
@@ -3667,9 +3668,9 @@ function componentScatterPlot () {
   * Initialise Data and Scales
   */
 	function init(data) {
-		var dataDimensions = dataAnalysis(data);
-		var seriesNames = dataDimensions.rowKeys;
-		var maxValue = dataDimensions.maxValue;
+		var dataSummary = dataSummarize(data);
+		var seriesNames = dataSummary.rowKeys;
+		var maxValue = dataSummary.maxValue;
 		var dateDomain = d3.extent(data[0].values, function (d) {
 			return d.key;
 		});
@@ -3815,9 +3816,9 @@ function componentRoseChartSector () {
   * Initialise Data and Scales
   */
 	function init(data) {
-		var dataDimensions = dataAnalysis(data);
-		var seriesNames = dataDimensions.columnKeys;
-		var maxValue = stacked ? dataDimensions.rowTotalsMax : dataDimensions.maxValue;
+		var dataSummary = dataSummarize(data);
+		var seriesNames = dataSummary.columnKeys;
+		var maxValue = stacked ? dataSummary.rowTotalsMax : dataSummary.maxValue;
 
 		// If the radius has not been passed then calculate it from width/height.
 		radius = typeof radius === "undefined" ? Math.min(width, height) / 2 : radius;
@@ -4456,9 +4457,9 @@ function chartBarChartCircular () {
 		innerRadius = typeof innerRadius === "undefined" ? radius / 4 : innerRadius;
 
 		// Slice Data, calculate totals, max etc.
-		var dataDimensions = dataAnalysis(data);
-		var seriesNames = dataDimensions.columnKeys;
-		var maxValue = dataDimensions.maxValue;
+		var dataSummary = dataSummarize(data);
+		var seriesNames = dataSummary.columnKeys;
+		var maxValue = dataSummary.maxValue;
 
 		// If the colorScale has not been passed then attempt to calculate.
 		colorScale = typeof colorScale === "undefined" ? d3.scaleOrdinal().domain(seriesNames).range(colors) : colorScale;
@@ -4589,6 +4590,38 @@ function chartBarChartCircular () {
 }
 
 /**
+ * Data Rotate
+ *
+ */
+function dataRotate (input) {
+
+	var columnKeys = input.map(function (x) {
+		return x.key;
+	});
+
+	var rowKeys = input[0].values.map(function (x) {
+		return x.key;
+	});
+
+	var output = rowKeys.map(function (x, i) {
+		var values = [];
+		for (var j = 0; j <= input.length - 1; j++) {
+			values[j] = {
+				key: columnKeys[j],
+				value: input[j].values[i].value
+			};
+		}
+
+		return {
+			key: x,
+			values: values
+		};
+	});
+
+	return output;
+}
+
+/**
  * Clustered Bar Chart (also called: Multi-set Bar Chart; Grouped Bar Chart)
  * @see http://datavizproject.com/data-type/grouped-bar-chart/
  */
@@ -4633,10 +4666,10 @@ function chartBarChartClustered () {
 		chartH = height - (margin.top + margin.bottom);
 
 		// Slice Data, calculate totals, max etc.
-		var dataDimensions = dataAnalysis(data);
-		var categoryNames = dataDimensions.rowKeys;
-		var maxValue = dataDimensions.maxValue;
-		var seriesNames = dataDimensions.columnKeys;
+		var dataSummary = dataSummarize(data);
+		var categoryNames = dataSummary.rowKeys;
+		var maxValue = dataSummary.maxValue;
+		var seriesNames = dataSummary.columnKeys;
 
 		// If the colorScale has not been passed then attempt to calculate.
 		colorScale = typeof colorScale === "undefined" ? d3.scaleOrdinal().domain(seriesNames).range(colors) : colorScale;
@@ -4677,6 +4710,7 @@ function chartBarChartClustered () {
 
 		selection.each(function (data) {
 			// Initialise Data
+			data = dataRotate(data);
 			init(data);
 
 			// Vertical Bars Component
@@ -4809,10 +4843,10 @@ function chartBarChartStacked () {
 		chartW = width - (margin.left + margin.right);
 		chartH = height - (margin.top + margin.bottom);
 
-		var dataDimensions = dataAnalysis(data);
-		var categoryNames = dataDimensions.rowKeys;
-		var seriesTotalsMax = dataDimensions.rowTotalsMax;
-		var seriesNames = dataDimensions.columnKeys;
+		var dataSummary = dataSummarize(data);
+		var categoryNames = dataSummary.rowKeys;
+		var seriesTotalsMax = dataSummary.rowTotalsMax;
+		var seriesNames = dataSummary.columnKeys;
 
 		// If the colorScale has not been passed then attempt to calculate.
 		colorScale = typeof colorScale === "undefined" ? d3.scaleOrdinal().domain(seriesNames).range(colors) : colorScale;
@@ -4853,6 +4887,7 @@ function chartBarChartStacked () {
 
 		selection.each(function (data) {
 			// Initialise Data
+			data = dataRotate(data);
 			init(data);
 
 			// Stacked Bars Component
@@ -4981,9 +5016,9 @@ function chartBarChartHorizontal () {
 		chartH = height - (margin.top + margin.bottom);
 
 		// Slice Data, calculate totals, max etc.
-		var dataDimensions = dataAnalysis(data);
-		var seriesNames = dataDimensions.columnKeys;
-		var maxValue = dataDimensions.maxValue;
+		var dataSummary = dataSummarize(data);
+		var seriesNames = dataSummary.columnKeys;
+		var maxValue = dataSummary.maxValue;
 
 		// If the colorScale has not been passed then attempt to calculate.
 		colorScale = typeof colorScale === "undefined" ? d3.scaleOrdinal().domain(seriesNames).range(colors) : colorScale;
@@ -5137,9 +5172,9 @@ function chartBarChartVertical () {
 		chartH = height - (margin.top + margin.bottom);
 
 		// Slice Data, calculate totals, max etc.
-		var dataDimensions = dataAnalysis(data);
-		var seriesNames = dataDimensions.columnKeys;
-		var maxValue = dataDimensions.maxValue;
+		var dataSummary = dataSummarize(data);
+		var seriesNames = dataSummary.columnKeys;
+		var maxValue = dataSummary.maxValue;
 
 		// If the colorScale has not been passed then attempt to calculate.
 		colorScale = typeof colorScale === "undefined" ? d3.scaleOrdinal().domain(seriesNames).range(colors) : colorScale;
@@ -5301,7 +5336,7 @@ function chartBubbleChart () {
 		chartH = height - (margin.top + margin.bottom);
 
 		// Calculate the extents for each series.
-		// TODO: Use dataAnalysis() ?
+		// TODO: Use dataSummarize() ?
 		function extents(key) {
 			var serExts = [];
 			d3.map(data).values().forEach(function (d) {
@@ -5712,8 +5747,8 @@ function chartDonutChart () {
 		innerRadius = typeof innerRadius === "undefined" ? radius / 2 : innerRadius;
 
 		// Slice Data, calculate totals, max etc.
-		var dataDimensions = dataAnalysis(data);
-		var seriesNames = dataDimensions.columnKeys;
+		var dataSummary = dataSummarize(data);
+		var seriesNames = dataSummary.columnKeys;
 
 		// If the colorScale has not been passed then attempt to calculate.
 		colorScale = typeof colorScale === "undefined" ? d3.scaleOrdinal().domain(seriesNames).range(colors) : colorScale;
@@ -5874,9 +5909,9 @@ function chartGanttChart () {
 		chartW = width - (margin.left + margin.right);
 		chartH = height - (margin.top + margin.bottom);
 
-		var dataDimensions = dataAnalysis(data);
-		var categoryNames = dataDimensions.rowKeys;
-		var seriesNames = dataDimensions.columnKeys;
+		var dataSummary = dataSummarize(data);
+		var categoryNames = dataSummary.rowKeys;
+		var seriesNames = dataSummary.columnKeys;
 
 		// Calculate Start and End Dates
 		data.forEach(function (d) {
@@ -5916,7 +5951,7 @@ function chartGanttChart () {
 			// Initialise Data
 			init(data);
 
-			// Create Series Groups
+			// Create bar groups
 			var seriesGroup = chart.select(".ganttBarGroup").selectAll(".seriesGroup").data(data).enter().append("g").classed("seriesGroup", true).attr("id", function (d) {
 				return d.key;
 			}).attr("transform", function (d) {
@@ -6070,13 +6105,13 @@ function chartHeatMapRadial () {
 		innerRadius = typeof innerRadius === "undefined" ? radius / 4 : innerRadius;
 
 		// Slice Data, calculate totals, max etc.
-		var dataDimensions = dataAnalysis(data);
-		var categoryNames = dataDimensions.rowKeys;
-		var seriesNames = dataDimensions.columnKeys;
+		var dataSummary = dataSummarize(data);
+		var categoryNames = dataSummary.rowKeys;
+		var seriesNames = dataSummary.columnKeys;
 
 		// If thresholds values are not set attempt to auto-calculate the thresholds.
 		if (!thresholds) {
-			thresholds = dataDimensions.thresholds;
+			thresholds = dataSummary.thresholds;
 		}
 
 		// If the colorScale has not been passed then attempt to calculate.
@@ -6261,13 +6296,13 @@ function chartHeatMapTable () {
 		chartH = height - margin.top - margin.bottom;
 
 		// Slice Data, calculate totals, max etc.
-		var dataDimensions = dataAnalysis(data);
-		var categoryNames = dataDimensions.rowKeys;
-		var seriesNames = dataDimensions.columnKeys;
+		var dataSummary = dataSummarize(data);
+		var categoryNames = dataSummary.rowKeys;
+		var seriesNames = dataSummary.columnKeys;
 
 		// If thresholds values are not set attempt to auto-calculate the thresholds.
 		if (!thresholds) {
-			thresholds = dataDimensions.thresholds;
+			thresholds = dataSummary.thresholds;
 		}
 
 		// If the colorScale has not been passed then attempt to calculate.
@@ -6433,9 +6468,9 @@ function chartLineChart () {
 		chartH = height - margin.top - margin.bottom;
 
 		// Slice Data, calculate totals, max etc.
-		var dataDimensions = dataAnalysis(data);
-		var seriesNames = dataDimensions.rowKeys;
-		var maxValue = dataDimensions.maxValue;
+		var dataSummary = dataSummarize(data);
+		var seriesNames = dataSummary.rowKeys;
+		var maxValue = dataSummary.maxValue;
 
 		// Convert dates
 		data.forEach(function (d, i) {
@@ -6649,9 +6684,9 @@ function chartPolarAreaChart () {
 		radius = typeof radius === "undefined" ? Math.min(chartW, chartH) / 2 : radius;
 
 		// Slice Data, calculate totals, max etc.
-		var dataDimensions = dataAnalysis(data);
-		var seriesNames = dataDimensions.columnKeys;
-		var maxValue = dataDimensions.maxValue;
+		var dataSummary = dataSummarize(data);
+		var seriesNames = dataSummary.columnKeys;
+		var maxValue = dataSummary.maxValue;
 
 		// If the colorScale has not been passed then attempt to calculate.
 		colorScale = typeof colorScale === "undefined" ? d3.scaleOrdinal().domain(seriesNames).range(colors) : colorScale;
@@ -6837,11 +6872,11 @@ function chartPunchCard () {
 		chartH = height - margin.top - margin.bottom;
 
 		// Slice Data, calculate totals, max etc.
-		var dataDimensions = dataAnalysis(data);
-		var categoryNames = dataDimensions.rowKeys;
-		var seriesNames = dataDimensions.columnKeys;
-		var maxValue = dataDimensions.maxValue;
-		var minValue = dataDimensions.minValue;
+		var dataSummary = dataSummarize(data);
+		var categoryNames = dataSummary.rowKeys;
+		var seriesNames = dataSummary.columnKeys;
+		var maxValue = dataSummary.maxValue;
+		var minValue = dataSummary.minValue;
 
 		var valDomain = [minValue, maxValue];
 		var sizeDomain = useGlobalScale ? valDomain : [0, d3.max(data[1]["values"], function (d) {
@@ -7030,10 +7065,10 @@ function chartRadarChart () {
     radius = typeof radius === "undefined" ? Math.min(chartW, chartH) / 2 : radius;
 
     // Slice Data, calculate totals, max etc.
-    var dataDimensions = dataAnalysis(data);
-    var seriesNames = dataDimensions.rowKeys;
-    var categoryNames = dataDimensions.columnKeys;
-    var maxValue = dataDimensions.maxValue;
+    var dataSummary = dataSummarize(data);
+    var seriesNames = dataSummary.rowKeys;
+    var categoryNames = dataSummary.columnKeys;
+    var maxValue = dataSummary.maxValue;
 
     // If the colorScale has not been passed then attempt to calculate.
     colorScale = typeof colorScale === "undefined" ? d3.scaleOrdinal().domain(seriesNames).range(colors) : colorScale;
@@ -7197,10 +7232,10 @@ function chartRoseChart () {
 		radius = typeof radius === "undefined" ? Math.min(chartW, chartH) / 2 : radius;
 
 		// Slice Data, calculate totals, max etc.
-		var dataDimensions = dataAnalysis(data);
-		var categoryNames = dataDimensions.rowKeys;
-		var seriesNames = dataDimensions.columnKeys;
-		var maxValue = dataDimensions.maxValue;
+		var dataSummary = dataSummarize(data);
+		var categoryNames = dataSummary.rowKeys;
+		var seriesNames = dataSummary.columnKeys;
+		var maxValue = dataSummary.maxValue;
 
 		// If the colorScale has not been passed then attempt to calculate.
 		colorScale = typeof colorScale === "undefined" ? d3.scaleOrdinal().domain(seriesNames).range(colors) : colorScale;
@@ -7355,10 +7390,11 @@ var index = {
 	copyright: copyright,
 	license: license,
 	base: base,
-	component: component,
 	chart: chart,
+	component: component,
 	palette: palette,
-	dataAnalysis: dataAnalysis
+	dataSummarize: dataSummarize,
+	dataRotate: dataRotate
 };
 
 return index;

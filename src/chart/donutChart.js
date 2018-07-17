@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import { default as palette } from "../palette";
-import { default as dataAnalysis } from "../dataAnalysis";
+import { default as dataSummarize } from "../dataSummarize";
 import { default as component } from "../component";
 
 /**
@@ -52,8 +52,8 @@ export default function() {
 			innerRadius;
 
 		// Slice Data, calculate totals, max etc.
-		let dataDimensions = dataAnalysis(data);
-		let seriesNames = dataDimensions.columnKeys;
+		let dataSummary = dataSummarize(data);
+		let seriesNames = dataSummary.columnKeys;
 
 		// If the colorScale has not been passed then attempt to calculate.
 		colorScale = (typeof colorScale === "undefined") ?
