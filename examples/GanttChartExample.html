@@ -26,6 +26,7 @@
       {"startDate": new Date(2018, 7, 1), "endDate": new Date(2019, 12, 24), "name": "Nicole", "status": "Deployment"}
     ];
 
+    // Convert json to d3-ez data format
     var dataNested = d3.nest()
       .key(function(d) {
         return d.name;
@@ -62,7 +63,10 @@
       .height(500)
       .chart(chart)
       .legend(legend)
-      .title(title);
+      .title(title)
+      .on("customValueMouseOver", function(d) {
+        console.log(d);
+      });
 
     d3.select("#chartholder")
       .datum(dataNested)

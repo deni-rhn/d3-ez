@@ -42,14 +42,16 @@ export default function() {
 	var dateDomainMin;
 	var dateDomainMax;
 
+	/**
+	 * Initialise Data, Scales and Series
+	 */
 	var init = function(data) {
 		chartW = width - (margin.left + margin.right);
 		chartH = height - (margin.top + margin.bottom);
 
-		// TODO: Flip to dataAnalysis(), remove groupNames & categoryNames.
-		var dataDimensions = d3.ez.dataParse(data);
-		var categoryNames = ("undefined" !== typeof dataDimensions.rowKeys ? dataDimensions.rowKeys : dataDimensions.groupNames);
-		var seriesNames = ("undefined" !== typeof dataDimensions.columnKeys ? dataDimensions.columnKeys : dataDimensions.categoryNames);
+		var dataDimensions = dataAnalysis(data);
+		var categoryNames = dataDimensions.rowKeys;
+		var seriesNames = dataDimensions.columnKeys;
 
 		// Calculate Start and End Dates
 		data.forEach(function(d) {

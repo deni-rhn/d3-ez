@@ -90,10 +90,12 @@ export default function() {
 		let layers = ["barChart", "xAxis axis", "yAxis axis"];
 		chart.classed(classed, true)
 			.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-			.attr("width", chartW).attr("height", chartH)
+			.attr("width", chartW)
+			.attr("height", chartH)
 			.selectAll("g")
 			.data(layers).enter()
-			.append("g").attr("class", function(d) { return d; });
+			.append("g")
+			.attr("class", function(d) { return d; });
 
 		selection.each(function(data) {
 			// Initialise Data
@@ -101,7 +103,8 @@ export default function() {
 
 			// Horizontal Bars
 			let barsHorizontal = component.barsHorizontal()
-				.width(chartW).height(chartH)
+				.width(chartW)
+				.height(chartH)
 				.colorScale(colorScale)
 				.xScale(xScale)
 				.yScale(yScale)

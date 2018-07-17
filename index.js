@@ -24,8 +24,8 @@ export default {
 	copyright: copyright,
 	license: license,
 	base: base,
-	dataAnalysis: dataAnalysis,
-	palette: palette,
 	component: component,
-	chart: chart
+	chart: chart,
+	palette: palette,
+	dataAnalysis: dataAnalysis
 };
